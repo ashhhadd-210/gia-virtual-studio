@@ -1,0 +1,24 @@
+#!/bin/sh
+# GIA Backend HOLD — pushes are disabled until delivery acceptance/payment.
+# See c:/Users/Muhammad Ashhad/Downloads/GIA/HOLD.md for context.
+#
+# This repo lives on Veni's GitHub (venetanaydenova-gif). The prod-deploy-prep
+# branch is 3 commits ahead and contains the requirements.txt UTF-8 fix,
+# DEPLOY.md, .do/app.yaml, and the playwright optional-import patch — the
+# entire backend deploy-readiness package. Do not push until paid.
+#
+# To lift the hold:  rm .git/hooks/pre-push
+#
+echo ""
+echo "============================================================"
+echo "  PUSH REFUSED — Gia-Backend-V5-Deploy is under HOLD"
+echo "  Reason: client/payment dispute with Veni — see HOLD.md"
+echo "  Located at: Downloads/GIA/HOLD.md"
+echo ""
+echo "  NOTE: .do/app.yaml has deploy_on_push: true on branch main."
+echo "  A push to main triggers an auto-deploy on Veni's DO account."
+echo ""
+echo "  To lift: rm .git/hooks/pre-push"
+echo "============================================================"
+echo ""
+exit 1

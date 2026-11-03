@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/img/logo.png" />
+    <!-- viewport-fit=cover gives us iPhone notch / safe-area access via env(safe-area-inset-*).
+         user-scalable=no stops the page pinch-zoom from interfering with the 3D scene's
+         touch gestures (look/move joystick handle their own zoom semantics). -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no" />
+    <meta name="theme-color" content="#04070a" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>GIA Fashion Virtual Studio</title>
+    <!-- Google model-viewer — renders GLB/GLTF with full PBR quality -->
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.5.0/model-viewer.min.js"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>

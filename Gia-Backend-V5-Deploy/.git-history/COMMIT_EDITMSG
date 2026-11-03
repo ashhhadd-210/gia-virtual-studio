@@ -1,0 +1,9 @@
+fix: make playwright import optional so web API boots without it
+
+The news-scraping design agent's `playwright` dependency was moved out of
+requirements.txt to slim the production image, but main.py still imported it
+at module top level, crashing the container on boot (ModuleNotFoundError).
+Guard the import and its single call site so the web API runs without
+playwright; the scraping agent no-ops cleanly when it's absent.
+
+Co-Authored-By: Claude Opus 4.7 <noreply@anthropic.com>

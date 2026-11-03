@@ -1,0 +1,89 @@
+# DigitalOcean App Platform spec for GIA backend.
+#
+# Deploy with:
+#   doctl apps create --spec .do/app.yaml
+#
+# Or use the DO web console: Apps → Create → Connect this repo →
+# DigitalOcean will auto-detect this file under .do/app.yaml.
+#
+# After deploy, set the env vars marked SECRET in the DO dashboard
+# (Apps → your app → Settings → App-Level Environment Variables).
+# Values cannot live in this file because it's in version control.
+
+name: gia-backend
+region: nyc
+services:
+  - name: web
+    github:
+      repo: venetanaydenova-gif/Gia-Backend-V5-Deploy
+      branch: main
+      deploy_on_push: true
+    source_dir: /
+    instance_count: 1
+    instance_size_slug: basic-xxs # $5/mo — sufficient for initial launch traffic
+    http_port: 8000
+    run_command: uvicorn main:app --host 0.0.0.0 --port $PORT --workers 2
+    health_check:
+      http_path: /health
+      initial_delay_seconds: 30
+      period_seconds: 30
+      timeout_seconds: 5
+      success_threshold: 1
+      failure_threshold: 5
+    envs:
+      # ── REQUIRED — set values in DO dashboard, not here ──
+      - key: POSTGRESQL_URI
+        scope: RUN_TIME
+        type: SECRET
+        # Set in DO dashboard — use the Supabase pooler URL (port 6543), not direct (5432).
+      - key: OPENAI_API_KEY
+        scope: RUN_TIME
+        type: SECRET
+      - key: JWT_SECRET
+        scope: RUN_TIME
+        type: SECRET
+        # Generate with: python -c "import secrets; print(secrets.token_hex(32))"
+      - key: GMAIL_SENDER_EMAIL
+        scope: RUN_TIME
+        type: SECRET
+      - key: GMAIL_APP_PASSWORD
+        scope: RUN_TIME
+        type: SECRET
+
+      # ── PUBLIC — these can live here safely ──
+      - key: ENVIRONMENT
+        scope: RUN_TIME
+        value: production
+      - key: GPT_FREE_DAILY_LIMIT
+        scope: RUN_TIME
+        value: "30" # Veni's FINAL NOTE: 30 free messages/day
+      - key: GPT_PAID_HOURLY_LIMIT
+        scope: RUN_TIME
+        value: "200"
+      - key: JWT_EXPIRE_DAYS
+        scope: RUN_TIME
+        value: "7"
+      - key: OTP_EXPIRE_MINUTES
+        scope: RUN_TIME
+        value: "10"
+      - key: REQUIRE_EMAIL_VERIFICATION
+        scope: RUN_TIME
+        value: "true"
+      - key: FREE_DEMO_MODE
+        scope: RUN_TIME
+        value: "true" # Veni: initial release is free, no Stripe payments
+      - key: ALLOWED_ORIGINS
+        scope: RUN_TIME
+        value: "https://giafashionverse.com,https://www.giafashionverse.com"
+        # Update once production frontend domain is finalized
+      - key: FRONTEND_URL
+        scope: RUN_TIME
+        value: "https://giafashionverse.com"
+
+      # ── DESIGN-AGENT TUNING (optional, defaults are safe) ──
+      - key: SCRAPE_INTERVAL_HOURS
+        scope: RUN_TIME
+        value: "24"
+      - key: PROXY_VOTE_INTERVAL_HOURS
+        scope: RUN_TIME
+        value: "24"

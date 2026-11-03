@@ -1,0 +1,1503 @@
+/* ─────────────────────────────────────────────────────────
+   showroom-ui.css
+   Styles for InspectPanel + GSNowGPT unified chatbot panel.
+   Follows the dark-luxury aesthetic of the GIA showroom.
+   ───────────────────────────────────────────────────────── */
+
+/* ── Tokens ──────────────────────────────────────────────── */
+:root {
+  /* Legacy gold (kept for InspectPanel continuity) */
+  --ui-gold-1: #c9a227;
+  --ui-gold-2: #e5bc72;
+  --ui-gold-3: #f0dcb8;
+  --ui-gold-border: rgba(255, 218, 155, 0.22);
+  --ui-gold-border-active: rgba(229, 188, 114, 0.52);
+
+  /* ── Chatbot blue palette ─────────────────────────────── */
+  --ui-blue-1: #1a7fff;
+  --ui-blue-2: #4dc8ff;
+  --ui-blue-3: #a8dcff;
+  --ui-blue-border: rgba(77, 170, 255, 0.20);
+  --ui-blue-border-active: rgba(77, 200, 255, 0.48);
+  --ui-blue-glow: rgba(26, 127, 255, 0.35);
+  --ui-blue-bg: rgba(10, 30, 70, 0.55);
+  --ui-blue-bg-hover: rgba(20, 50, 110, 0.55);
+
+  /* Shared blues (already existed) */
+  --ui-blue: rgba(157, 213, 255, 0.88);
+  --ui-blue-dim: rgba(157, 213, 255, 0.38);
+
+  /* Chatbot surface colours (darker, blue-tinted) */
+  --ui-bg-deep: rgba(4, 8, 18, 0.98);
+  --ui-bg-glass: rgba(6, 12, 28, 0.88);
+  --ui-bg-card: rgba(10, 18, 40, 0.72);
+  --ui-bg-hover: rgba(18, 32, 68, 0.72);
+
+  /* Text */
+  --ui-text-primary: rgba(220, 235, 255, 0.96);
+  --ui-text-secondary: rgba(170, 200, 240, 0.72);
+  --ui-text-muted: rgba(110, 145, 190, 0.68);
+  --ui-text-gold: rgba(229, 188, 114, 0.94);      /* kept for wardrobe/vote UI */
+  --ui-text-blue: rgba(140, 200, 255, 0.94);
+
+  --ui-radius-sm: 10px;
+  --ui-radius-md: 16px;
+  --ui-radius-lg: 22px;
+  /* `--ui-blur` was blur(20px) — costly backdrop-filter on iGPU. Set to `none`
+     globally; panels now rely on their gradient background + box-shadow for
+     depth, which read as "luxury" without the per-frame full-canvas blur
+     pass that was dragging browse-mode FPS 30 → 12. The variable stays in
+     place so a future strong-GPU profile can re-enable it conditionally. */
+  --ui-blur: none;
+}
+
+/* ── InspectPanel ─────────────────────────────────────────── */
+.inspect-panel {
+  position: fixed;
+  bottom: 28px;
+  /* Center within the canvas area (full width minus 360px chat panel) */
+  left: calc(50% - 180px);
+  transform: translateX(-50%) translateY(0);
+  z-index: 300;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+  animation: inspectRise 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes inspectRise {
+  from { opacity: 0; transform: translateX(-50%) translateY(22px); }
+  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+/* When chat sidebar is closed, re-center inspect panel in the full canvas */
+body:not(.chat-sidebar-open) .inspect-panel {
+  left: 50%;
+}
+
+.inspect-panel__label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border: 1px solid var(--ui-gold-border);
+  border-radius: 999px;
+  background: var(--ui-bg-glass);
+  backdrop-filter: var(--ui-blur);
+}
+
+.inspect-panel__kind {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ui-text-gold);
+}
+
+.inspect-panel__name {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--ui-text-primary);
+  max-width: min(320px, 60vw);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.inspect-panel__actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border: 1px solid var(--ui-gold-border);
+  border-radius: var(--ui-radius-lg);
+  background: var(--ui-bg-glass);
+  backdrop-filter: var(--ui-blur);
+  box-shadow: 0 18px 52px rgba(0, 0, 0, 0.38);
+}
+
+.inspect-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 9px 12px;
+  border: 1px solid transparent;
+  border-radius: var(--ui-radius-md);
+  background: transparent;
+  color: var(--ui-text-secondary);
+  cursor: pointer;
+  /* Longer ease-out curves so hover/active state changes feel like fabric
+     settling, not a snappy SaaS button. The cubic-bezier is a standard
+     "Material decelerate" curve — slow start, fast finish. */
+  transition:
+    background 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.28s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.24s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.28s cubic-bezier(0.22, 1, 0.36, 1);
+  font-family: inherit;
+  white-space: nowrap;
+}
+
+.inspect-btn:hover {
+  background: var(--ui-bg-hover);
+  border-color: var(--ui-gold-border);
+  color: var(--ui-text-primary);
+  transform: translateY(-1.5px);
+  box-shadow: 0 4px 18px -8px rgba(201, 162, 39, 0.45);
+}
+
+.inspect-btn:active {
+  transform: translateY(0) scale(0.97);
+  transition-duration: 0.08s;
+}
+
+.inspect-btn--active {
+  color: var(--ui-text-gold);
+  border-color: var(--ui-gold-border-active);
+  background: rgba(201, 162, 39, 0.10);
+}
+
+.inspect-btn--primary {
+  background: rgba(201, 162, 39, 0.12);
+  border-color: var(--ui-gold-border-active);
+  color: var(--ui-text-gold);
+}
+
+.inspect-btn--primary:hover {
+  background: rgba(201, 162, 39, 0.22);
+}
+
+.inspect-btn--back {
+  color: var(--ui-text-muted);
+  border-color: rgba(160, 148, 128, 0.18);
+}
+
+.inspect-btn--back:hover {
+  color: var(--ui-text-secondary);
+  border-color: rgba(160, 148, 128, 0.34);
+}
+
+.inspect-btn__icon {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.inspect-btn__label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.inspect-divider {
+  width: 1px;
+  height: 36px;
+  background: var(--ui-gold-border);
+  margin: 0 2px;
+}
+
+/* ── GSNowGPT Trigger Button ─────────────────────────────── */
+.gsnowgpt-trigger {
+  position: fixed;
+  bottom: 90px;
+  right: 24px;
+  z-index: 290;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 18px 11px 14px;
+  border: 1px solid var(--ui-blue-border);
+  border-radius: 999px;
+  background: var(--ui-bg-glass);
+  backdrop-filter: var(--ui-blur);
+  box-shadow: 0 14px 42px rgba(0, 0, 0, 0.38), 0 0 28px var(--ui-blue-glow);
+  cursor: pointer;
+  font-family: inherit;
+  color: var(--ui-text-primary);
+  transition: border-color 0.14s ease, background 0.14s ease, transform 0.14s ease;
+  pointer-events: auto;
+}
+
+.gsnowgpt-trigger:hover {
+  border-color: var(--ui-blue-border-active);
+  background: rgba(8, 16, 36, 0.96);
+  transform: translateY(-2px);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.42), 0 0 40px var(--ui-blue-glow);
+}
+
+.gsnowgpt-trigger__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ui-blue-2);
+  box-shadow: 0 0 10px rgba(77, 200, 255, 0.8);
+  animation: gsnowgptPulse 2.6s ease-in-out infinite;
+}
+
+@keyframes gsnowgptPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.55; transform: scale(0.78); }
+}
+
+.gsnowgpt-trigger__label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--ui-text-blue);
+}
+
+.gsnowgpt-trigger__sub {
+  font-size: 10px;
+  color: var(--ui-text-muted);
+  letter-spacing: 0.06em;
+}
+
+/* ── GSNowGPT Panel ──────────────────────────────────────── */
+.gsnowgpt-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 400;
+  pointer-events: none; /* Never block canvas interaction */
+}
+
+.gsnowgpt-backdrop--open {
+  pointer-events: none; /* Panel is always visible — no click-away-to-close */
+}
+
+.gsnowgpt-panel {
+  position: fixed;
+  top: 72px;
+  right: 0;
+  /* Explicit height instead of bottom: 0 — dvh handles mobile address bar
+     collapse, calc() guarantees the inner flex column has a deterministic
+     height even if a transformed ancestor breaks position:fixed inheritance. */
+  height: calc(100dvh - 72px);
+  width: 360px;
+  z-index: 401;
+  display: flex;
+  flex-direction: column;
+  background: var(--ui-bg-deep);
+  border-left: 1px solid var(--ui-blue-border);
+  box-shadow:
+    -24px 0 80px rgba(0, 0, 0, 0.6),
+    -2px 0 40px rgba(26, 127, 255, 0.08);
+  /* Closed state — panel slid off-screen right. Was previously
+     translateX(0) on BOTH default and --open which meant the minimize
+     button was a no-op visually. Default is now translateX(100%);
+     --open below pulls it back into view. */
+  transform: translateX(100%);
+  transition: transform 0.34s cubic-bezier(0.22, 1, 0.36, 1);
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.gsnowgpt-panel--open {
+  transform: translateX(0);
+  pointer-events: auto;
+}
+
+/* Lock studio page to viewport height — no document scroll. Prevents the
+   user from scrolling past the chat panel into any below-canvas content.
+   Selector targets #render-canvas (only rendered by StudioPage) because the
+   previous .studio-page-root selector didn't match anything in the DOM. */
+body:has(#render-canvas) {
+  overflow: hidden;
+  height: 100dvh;
+}
+html:has(#render-canvas) {
+  overflow: hidden;
+  height: 100dvh;
+}
+
+/* Header */
+.gsnowgpt-header {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--ui-blue-border);
+  background: linear-gradient(135deg, rgba(6, 14, 36, 0.98), rgba(8, 18, 44, 0.95));
+  position: relative;
+}
+
+.gsnowgpt-header__title {
+  flex: 1;
+  min-width: 0;
+}
+
+.gsnowgpt-header__minimize {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid rgba(160, 148, 128, 0.18);
+  background: transparent;
+  color: var(--ui-text-secondary);
+  cursor: pointer;
+  transition:
+    background 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 0.22s cubic-bezier(0.22, 1, 0.36, 1),
+    color 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.gsnowgpt-header__minimize:hover {
+  background: rgba(201, 162, 39, 0.10);
+  border-color: var(--ui-gold-border);
+  color: var(--ui-text-primary);
+}
+
+.gsnowgpt-header__minimize:active {
+  transform: scale(0.94);
+  transition-duration: 0.08s;
+  overflow: hidden;
+}
+
+/* Subtle top-edge glow line on header */
+.gsnowgpt-header::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(77, 200, 255, 0.5), transparent);
+}
+
+.gsnowgpt-header__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--ui-blue-2);
+  box-shadow: 0 0 12px rgba(77, 200, 255, 0.9), 0 0 24px rgba(77, 200, 255, 0.4);
+  flex-shrink: 0;
+  animation: gsnowgptPulse 2.6s ease-in-out infinite;
+}
+
+.gsnowgpt-header__title {
+  flex: 1;
+}
+
+.gsnowgpt-header__name {
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--ui-text-blue);
+  text-shadow: 0 0 20px rgba(77, 200, 255, 0.4);
+}
+
+.gsnowgpt-header__sub {
+  font-size: 10px;
+  color: var(--ui-text-muted);
+  letter-spacing: 0.08em;
+  margin-top: 1px;
+}
+
+.gsnowgpt-header__close {
+  width: 30px;
+  height: 30px;
+  border: 1px solid var(--ui-blue-border);
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ui-text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  transition: background 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+  font-family: inherit;
+  flex-shrink: 0;
+}
+
+.gsnowgpt-header__close:hover {
+  background: rgba(77, 200, 255, 0.08);
+  border-color: var(--ui-blue-border-active);
+  color: var(--ui-text-blue);
+}
+
+/* Nav tabs */
+.gsnowgpt-nav {
+  flex-shrink: 0;
+  display: flex;
+  padding: 10px 12px 0;
+  gap: 4px;
+  border-bottom: 1px solid var(--ui-blue-border);
+  background: rgba(6, 12, 30, 0.72);
+}
+
+.gsnowgpt-nav__tab {
+  flex: 1;
+  padding: 7px 4px 9px;
+  border: none;
+  border-bottom: 2px solid transparent;
+  background: transparent;
+  color: var(--ui-text-muted);
+  font-family: inherit;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: color 0.12s ease, border-color 0.12s ease;
+}
+
+.gsnowgpt-nav__tab:hover {
+  color: var(--ui-text-blue);
+}
+
+.gsnowgpt-nav__tab--active {
+  color: var(--ui-text-blue);
+  border-bottom-color: var(--ui-blue-2);
+  text-shadow: 0 0 12px rgba(77, 200, 255, 0.5);
+}
+
+/* Scrollable body */
+.gsnowgpt-body {
+  flex: 1 1 0;
+  /* min-height: 0 is CRITICAL on a flex-column child that owns the scroll.
+     Without it, the body expands to fit content height (long AI replies)
+     and pushes the .chat-input-row off-screen below the panel. With it,
+     body is constrained to remaining flex space → overflow-y triggers
+     proper internal scroll → input stays pinned to bottom. */
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(201, 162, 39, 0.22) transparent;
+}
+
+.gsnowgpt-body::-webkit-scrollbar {
+  width: 4px;
+}
+.gsnowgpt-body::-webkit-scrollbar-thumb {
+  background: rgba(201, 162, 39, 0.22);
+  border-radius: 999px;
+}
+
+/* ── Home View ───────────────────────────────────────────── */
+.home-hero {
+  padding: 22px 18px 14px;
+  border-bottom: 1px solid var(--ui-gold-border);
+}
+
+.home-hero__eyebrow {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  color: var(--ui-text-gold);
+  text-transform: uppercase;
+  margin: 0 0 8px;
+}
+
+.home-hero__headline {
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--ui-text-primary);
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+
+.home-hero__sub {
+  font-size: 12px;
+  color: var(--ui-text-secondary);
+  line-height: 1.55;
+  margin: 0;
+}
+
+.home-tier-strip {
+  display: flex;
+  gap: 6px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--ui-gold-border);
+}
+
+.home-tier {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: var(--ui-radius-sm);
+  border: 1px solid var(--ui-gold-border);
+  background: var(--ui-bg-card);
+}
+
+.home-tier__badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  margin-bottom: 3px;
+}
+
+.home-tier__badge--free  { color: rgba(149, 212, 255, 0.88); }
+.home-tier__badge--premium { color: var(--ui-text-gold); }
+.home-tier__badge--agent { color: rgba(200, 160, 255, 0.88); }
+
+.home-tier__desc {
+  font-size: 10px;
+  color: var(--ui-text-muted);
+  line-height: 1.45;
+}
+
+.home-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 18px;
+}
+
+.home-actions__group-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ui-text-muted);
+  margin: 8px 0 4px;
+}
+
+.home-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 14px;
+  border: 1px solid var(--ui-gold-border);
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-bg-card);
+  color: var(--ui-text-primary);
+  cursor: pointer;
+  font-family: inherit;
+  text-align: left;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.1s ease;
+  width: 100%;
+}
+
+.home-action-btn:hover {
+  background: var(--ui-bg-hover);
+  border-color: var(--ui-gold-border-active);
+  transform: translateX(2px);
+}
+
+.home-action-btn__icon {
+  font-size: 20px;
+  flex-shrink: 0;
+  width: 28px;
+  text-align: center;
+}
+
+.home-action-btn__text { flex: 1; }
+
+.home-action-btn__title {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--ui-text-primary);
+}
+
+.home-action-btn__desc {
+  font-size: 11px;
+  color: var(--ui-text-muted);
+  margin-top: 2px;
+}
+
+.home-action-btn__badge {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 999px;
+  flex-shrink: 0;
+}
+
+.home-action-btn__badge--free    { background: rgba(149,212,255,0.12); color: var(--ui-text-blue); }
+.home-action-btn__badge--premium { background: rgba(201,162,39,0.12);  color: var(--ui-text-gold); }
+
+/* ── Chat View ───────────────────────────────────────────── */
+.chat-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 16px 16px 8px;
+}
+
+.chat-msg {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 88%;
+}
+
+.chat-msg--user { align-self: flex-end; align-items: flex-end; }
+.chat-msg--bot  { align-self: flex-start; align-items: flex-start; }
+
+.chat-msg__sender {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.chat-msg--user .chat-msg__sender { color: var(--ui-text-muted); }
+.chat-msg--bot  .chat-msg__sender { color: var(--ui-text-gold); }
+
+.chat-msg__bubble {
+  padding: 10px 13px;
+  border-radius: var(--ui-radius-md);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.chat-msg--user .chat-msg__bubble {
+  background: rgba(201, 162, 39, 0.14);
+  border: 1px solid rgba(201, 162, 39, 0.22);
+  color: var(--ui-text-primary);
+  border-bottom-right-radius: 4px;
+}
+
+.chat-msg--bot .chat-msg__bubble {
+  background: var(--ui-bg-card);
+  border: 1px solid var(--ui-gold-border);
+  color: var(--ui-text-secondary);
+  border-bottom-left-radius: 4px;
+}
+
+.chat-msg__bubble--typing {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+.chat-typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ui-text-gold);
+  /* Snappier rhythm (0.9s vs 1.2s) so the "thinking" pulse reads as
+     "actively working" rather than "loading screen". Gold colour stays. */
+  animation: chatTyping 0.9s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  box-shadow: 0 0 6px rgba(201, 162, 39, 0.4);
+}
+.chat-typing-dot:nth-child(2) { animation-delay: 0.13s; }
+.chat-typing-dot:nth-child(3) { animation-delay: 0.26s; }
+
+@keyframes chatTyping {
+  0%, 80%, 100% { opacity: 0.28; transform: scale(0.78); }
+  40%           { opacity: 1;    transform: scale(1.08); }
+}
+
+/* Bot-message fade-in: lands with a 220ms ease-out instead of snap. Reads
+   as the answer "arriving" rather than "popping". Animation is one-time
+   per message (CSS animation, not transition) so existing messages don't
+   re-animate when new ones append. */
+.conv-msg--bot .conv-msg__bubble {
+  animation: chatBotReplyIn 0.32s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes chatBotReplyIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.chat-free-counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  margin: 4px 16px;
+  border-radius: var(--ui-radius-sm);
+  background: rgba(149, 212, 255, 0.06);
+  border: 1px solid rgba(149, 212, 255, 0.14);
+}
+
+.chat-free-counter__bar-wrap {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.chat-free-counter__bar {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--ui-gold-1), var(--ui-gold-2));
+  transition: width 0.3s ease;
+}
+
+.chat-free-counter__label {
+  font-size: 10px;
+  color: var(--ui-text-muted);
+  white-space: nowrap;
+}
+
+.chat-paywall {
+  margin: 12px 16px;
+  padding: 16px;
+  border: 1px solid var(--ui-gold-border-active);
+  border-radius: var(--ui-radius-md);
+  background: rgba(201, 162, 39, 0.06);
+  text-align: center;
+}
+
+.chat-paywall__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ui-text-gold);
+  margin-bottom: 6px;
+}
+
+.chat-paywall__desc {
+  font-size: 12px;
+  color: var(--ui-text-secondary);
+  line-height: 1.5;
+  margin-bottom: 12px;
+}
+
+.chat-paywall__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--ui-gold-1), #a8791a);
+  border: none;
+  color: #0a0702;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.12s ease, transform 0.1s ease;
+}
+
+.chat-paywall__cta:hover { opacity: 0.88; transform: translateY(-1px); }
+
+.chat-context-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin: 8px 16px;
+  padding: 11px 13px;
+  border: 1px solid rgba(201, 162, 39, 0.28);
+  border-radius: var(--ui-radius-sm);
+  background: rgba(201, 162, 39, 0.08);
+}
+
+.chat-context-banner__icon { font-size: 16px; flex-shrink: 0; }
+.chat-context-banner__text { font-size: 12px; color: var(--ui-text-secondary); line-height: 1.5; }
+.chat-context-banner__label { color: var(--ui-text-gold); font-weight: 600; }
+
+.chat-input-row {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 14px 16px 16px;
+  /* Glassy dark-blue backdrop */
+  background: linear-gradient(
+    to bottom,
+    rgba(4, 10, 26, 0.94) 0%,
+    rgba(4, 8, 20, 0.99) 100%
+  );
+  /* backdrop-filter removed — see --ui-blur comment. Bumped alpha so the
+     panel reads as solid-but-deep instead of relying on background blur. */
+  /* Luminous top edge instead of a hard line */
+  border-top: 1px solid rgba(77, 200, 255, 0.14);
+  box-shadow: 0 -6px 24px rgba(10, 30, 80, 0.45);
+}
+
+.chat-input-wrap {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+}
+
+.chat-input {
+  flex: 1;
+  padding: 11px 44px 11px 18px;
+  border: 1.5px solid var(--ui-blue-border);
+  border-radius: 24px;
+  background: rgba(8, 18, 44, 0.78);
+  color: var(--ui-text-primary);
+  font-family: inherit;
+  font-size: 13.5px;
+  line-height: 1.55;
+  outline: none;
+  resize: none;
+  max-height: 140px;
+  overflow-y: auto;
+  /* Subtle inner glow at rest */
+  box-shadow:
+    inset 0 1px 3px rgba(0, 0, 0, 0.45),
+    0 0 0 0 transparent;
+  transition:
+    border-color 0.18s ease,
+    box-shadow 0.22s ease,
+    background 0.18s ease;
+}
+
+.chat-input:focus {
+  border-color: var(--ui-blue-border-active);
+  background: rgba(10, 22, 56, 0.88);
+  box-shadow:
+    inset 0 1px 3px rgba(0, 0, 0, 0.4),
+    0 0 0 3px rgba(77, 200, 255, 0.12),
+    0 0 18px rgba(26, 127, 255, 0.18);
+}
+
+.chat-input::placeholder {
+  color: var(--ui-text-muted);
+  font-size: 13px;
+  letter-spacing: 0.01em;
+}
+
+/* Send button — sits inside the input wrap on the right */
+.chat-send-btn {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  /* Blue gradient */
+  background: linear-gradient(135deg, #1a7fff 0%, #0d5cd0 100%);
+  color: #e8f4ff;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow:
+    0 2px 10px rgba(26, 127, 255, 0.45),
+    0 1px 3px rgba(0, 0, 0, 0.4);
+  transition:
+    opacity 0.15s ease,
+    transform 0.14s ease,
+    box-shadow 0.15s ease;
+}
+
+.chat-send-btn:hover:not(:disabled) {
+  opacity: 1;
+  transform: scale(1.09);
+  box-shadow:
+    0 4px 16px rgba(26, 127, 255, 0.65),
+    0 1px 4px rgba(0, 0, 0, 0.45);
+}
+
+.chat-send-btn:active:not(:disabled) {
+  transform: scale(0.96);
+}
+
+.chat-send-btn:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+/* ── Agents View ─────────────────────────────────────────── */
+.agents-intro {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--ui-gold-border);
+}
+
+.agents-intro__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ui-text-primary);
+  margin: 0 0 5px;
+  letter-spacing: 0.04em;
+}
+
+.agents-intro__desc {
+  font-size: 12px;
+  color: var(--ui-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.agents-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.agent-card {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--ui-gold-border);
+  transition: background 0.12s ease;
+}
+
+.agent-card:hover { background: rgba(20, 16, 10, 0.4); }
+
+.agent-card__header {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.agent-card__icon {
+  font-size: 22px;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--ui-gold-border);
+  border-radius: 10px;
+  background: var(--ui-bg-card);
+  color: var(--ui-text-gold);
+}
+
+.agent-card__meta { flex: 1; }
+
+.agent-card__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ui-text-primary);
+  letter-spacing: 0.03em;
+}
+
+.agent-card__price {
+  font-size: 11px;
+  color: var(--ui-text-gold);
+  margin-top: 2px;
+}
+
+.agent-card__status {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.agent-card__status--subscribed  { background: rgba(149,212,255,0.12); color: var(--ui-text-blue); }
+.agent-card__status--preview     { background: rgba(201,162,39,0.12);  color: var(--ui-text-gold); }
+.agent-card__status--available   { background: rgba(160,148,128,0.12); color: var(--ui-text-muted); }
+
+.agent-card__desc {
+  font-size: 12px;
+  color: var(--ui-text-secondary);
+  line-height: 1.5;
+  margin-bottom: 10px;
+}
+
+.agent-card__features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.agent-card__feature-chip {
+  font-size: 10px;
+  color: var(--ui-text-muted);
+  padding: 3px 8px;
+  border: 1px solid rgba(160, 148, 128, 0.18);
+  border-radius: 999px;
+}
+
+.agent-card__actions {
+  display: flex;
+  gap: 6px;
+}
+
+.agent-action-btn {
+  padding: 7px 14px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: opacity 0.12s ease, transform 0.1s ease;
+}
+
+.agent-action-btn:hover { opacity: 0.82; transform: translateY(-1px); }
+
+.agent-action-btn--subscribe {
+  background: linear-gradient(135deg, var(--ui-gold-1), #a8791a);
+  border: none;
+  color: #080502;
+}
+
+.agent-action-btn--activate {
+  background: transparent;
+  border: 1px solid var(--ui-gold-border-active);
+  color: var(--ui-text-gold);
+}
+
+.agent-action-btn--delegate {
+  background: transparent;
+  border: 1px solid rgba(149,212,255,0.28);
+  color: var(--ui-text-blue);
+}
+
+.agent-action-btn--learn {
+  background: transparent;
+  border: 1px solid rgba(160, 148, 128, 0.22);
+  color: var(--ui-text-muted);
+}
+
+/* ── Features View ───────────────────────────────────────── */
+.features-intro {
+  padding: 16px 18px 12px;
+  border-bottom: 1px solid var(--ui-gold-border);
+}
+
+.features-intro__title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ui-text-primary);
+  margin: 0 0 5px;
+}
+
+.features-intro__desc {
+  font-size: 12px;
+  color: var(--ui-text-secondary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.features-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.feature-card {
+  padding: 15px 18px;
+  border-bottom: 1px solid var(--ui-gold-border);
+  transition: background 0.12s ease;
+}
+
+.feature-card:hover { background: rgba(20, 16, 10, 0.4); }
+
+.feature-card__header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+.feature-card__icon {
+  font-size: 18px;
+  color: var(--ui-text-gold);
+  flex-shrink: 0;
+}
+
+.feature-card__name {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ui-text-primary);
+}
+
+.feature-card__tier {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 999px;
+}
+
+.feature-card__tier--free    { background: rgba(149,212,255,0.12); color: var(--ui-text-blue); }
+.feature-card__tier--premium { background: rgba(201,162,39,0.12);  color: var(--ui-text-gold); }
+
+.feature-card__desc {
+  font-size: 12px;
+  color: var(--ui-text-secondary);
+  line-height: 1.5;
+  margin-bottom: 8px;
+}
+
+.feature-card__agents {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 10px;
+  font-size: 11px;
+  color: var(--ui-text-muted);
+}
+
+.feature-card__agent-chip {
+  padding: 2px 7px;
+  border: 1px solid rgba(200, 160, 255, 0.22);
+  border-radius: 999px;
+  color: rgba(200, 160, 255, 0.78);
+  font-size: 10px;
+}
+
+.feature-use-btn {
+  padding: 7px 18px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: opacity 0.12s ease, transform 0.1s ease;
+  border: none;
+}
+
+.feature-use-btn--free {
+  background: rgba(149,212,255,0.14);
+  color: var(--ui-text-blue);
+  border: 1px solid rgba(149,212,255,0.28);
+}
+
+.feature-use-btn--premium {
+  background: linear-gradient(135deg, var(--ui-gold-1), #a8791a);
+  color: #080502;
+}
+
+.feature-use-btn:hover { opacity: 0.82; transform: translateY(-1px); }
+
+/* ── Subscription View ───────────────────────────────────── */
+.sub-view {
+  padding: 20px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.sub-plan-card {
+  padding: 16px;
+  border: 1px solid var(--ui-gold-border);
+  border-radius: var(--ui-radius-md);
+  background: var(--ui-bg-card);
+}
+
+.sub-plan-card--featured {
+  border-color: var(--ui-gold-border-active);
+  background: rgba(201, 162, 39, 0.06);
+}
+
+.sub-plan-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.sub-plan-card__name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--ui-text-primary);
+}
+
+.sub-plan-card__price {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--ui-text-gold);
+}
+
+.sub-plan-card__period {
+  font-size: 11px;
+  color: var(--ui-text-muted);
+}
+
+.sub-plan-card__features {
+  font-size: 12px;
+  color: var(--ui-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 12px;
+  list-style: none;
+  padding: 0;
+}
+
+.sub-plan-card__features li::before {
+  content: "✦ ";
+  color: var(--ui-text-gold);
+  font-size: 10px;
+}
+
+.sub-cta-btn {
+  width: 100%;
+  padding: 11px;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.12s ease, transform 0.1s ease;
+  border: none;
+}
+
+.sub-cta-btn--gold {
+  background: linear-gradient(135deg, var(--ui-gold-1), #a8791a);
+  color: #080502;
+}
+
+.sub-cta-btn--outline {
+  background: transparent;
+  border: 1px solid var(--ui-gold-border);
+  color: var(--ui-text-secondary);
+}
+
+.sub-cta-btn:hover { opacity: 0.86; transform: translateY(-1px); }
+
+.sub-payment-logos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 0;
+  font-size: 11px;
+  color: var(--ui-text-muted);
+}
+
+.sub-payment-logo {
+  padding: 4px 10px;
+  border: 1px solid rgba(160, 148, 128, 0.2);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--ui-text-muted);
+}
+
+.sub-disclaimer {
+  font-size: 10px;
+  color: var(--ui-text-muted);
+  text-align: center;
+  line-height: 1.55;
+}
+
+/* ── Shared utilities ────────────────────────────────────── */
+.ui-section-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ui-text-muted);
+  padding: 14px 18px 4px;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Conversational Home View
+   ══════════════════════════════════════════════════════════ */
+
+.conv-home {
+  display: flex;
+  flex-direction: column;
+  padding: 18px 14px 4px;
+  gap: 14px;
+}
+
+/* ── Message row ─────────────────────────────────────────── */
+.conv-msg {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.conv-msg--user {
+  flex-direction: row-reverse;
+}
+
+/* Gold pulse dot — bot avatar */
+.conv-msg__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--ui-gold-1);
+  box-shadow: 0 0 8px rgba(201, 162, 39, 0.55);
+  flex-shrink: 0;
+  margin-top: 11px;
+  animation: gsnowgptPulse 2.6s ease-in-out infinite;
+}
+
+/* ── Message content wrapper ─────────────────────────────── */
+.conv-msg__content {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-width: 92%;
+}
+
+.conv-msg--user .conv-msg__content {
+  align-items: flex-end;
+}
+
+/* ── Bubble ──────────────────────────────────────────────── */
+.conv-msg__bubble {
+  padding: 10px 14px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.62;
+}
+
+.conv-msg--bot .conv-msg__bubble {
+  background: var(--ui-bg-card);
+  border: 1px solid var(--ui-gold-border);
+  border-bottom-left-radius: 4px;
+  color: var(--ui-text-secondary);
+}
+
+.conv-msg--user .conv-msg__bubble {
+  background: rgba(201, 162, 39, 0.11);
+  border: 1px solid rgba(201, 162, 39, 0.22);
+  border-bottom-right-radius: 4px;
+  color: var(--ui-text-primary);
+  font-size: 13px;
+}
+
+/* Typing bubble */
+.conv-msg__bubble--typing {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  padding: 12px 16px;
+  min-width: 54px;
+}
+
+.conv-typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--ui-text-gold);
+  display: inline-block;
+  animation: convTyping 1.2s ease-in-out infinite;
+}
+.conv-typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.conv-typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes convTyping {
+  0%, 80%, 100% { opacity: 0.22; transform: scale(0.8); }
+  40%           { opacity: 1;    transform: scale(1);   }
+}
+
+/* ── Quick-reply chips ───────────────────────────────────── */
+.conv-replies {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.conv-msg--user .conv-replies {
+  align-items: flex-end;
+}
+
+.conv-reply-btn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 9px 14px;
+  border: 1px solid var(--ui-gold-border);
+  border-radius: 10px;
+  background: var(--ui-bg-card);
+  color: var(--ui-text-primary);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.12s ease, border-color 0.12s ease, transform 0.1s ease;
+  width: 100%;
+}
+
+.conv-reply-btn:hover {
+  background: var(--ui-bg-hover);
+  border-color: var(--ui-gold-border-active);
+  transform: translateX(3px);
+}
+
+.conv-reply-btn:active {
+  transform: translateX(1px) scale(0.98);
+}
+
+.conv-reply-btn__icon {
+  font-size: 14px;
+  color: var(--ui-text-gold);
+  flex-shrink: 0;
+  width: 18px;
+  text-align: center;
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Responsive breakpoints
+   ──────────────────────────────────────────────────────────────────────────
+   Reference targets:
+   - 1920×1080 (desktop):     default rules
+   - 1366×768 / 1440×900:     default rules (360px chat ~25%)
+   - 1280×800 (small laptop): chat narrows to 320px
+   - 1024×768 (iPad land):    chat narrows to 300px, inspect tightens
+   - 768×1024 (iPad port):    mobile rules — chat docks bottom, full width
+   - <768 (phone):            mobile rules continue
+   ────────────────────────────────────────────────────────────────────────── */
+
+/* Small-laptop tier */
+@media (max-width: 1280px) {
+  .gsnowgpt-panel { width: 320px; }
+  .inspect-panel { left: calc(50% - 160px); }
+}
+
+/* Tablet-landscape / very-small laptop tier */
+@media (max-width: 1024px) {
+  .gsnowgpt-panel { width: 300px; }
+  .inspect-panel { left: calc(50% - 150px); }
+  .inspect-panel__name { font-size: 14px; }
+  .gsnowgpt-trigger__label { font-size: 13px; }
+  .gsnowgpt-trigger__sub { font-size: 10px; }
+}
+
+/* Mobile / tablet-portrait tier */
+@media (max-width: 768px) {
+  .inspect-panel__actions { flex-wrap: wrap; justify-content: center; }
+  .inspect-btn__label { display: none; }
+  /* Chat docks to the BOTTOM on mobile (not slide from the right).
+     Slide direction changes accordingly: translateY(100%) off-screen
+     when closed, translateY(0) open. Pairs with the minimize button
+     which calls onClose — same handler, axis-aware CSS. */
+  .gsnowgpt-panel {
+    width: 100vw;
+    left: 0;
+    right: 0;
+    top: auto;
+    bottom: 0;
+    height: 60dvh;
+    transform: translateY(100%);
+    border-left: none;
+    border-top: 1px solid var(--ui-blue-border);
+  }
+  .gsnowgpt-panel--open {
+    transform: translateY(0);
+  }
+  .inspect-panel {
+    left: 50%;
+    bottom: calc(60vh + 12px);
+  }
+  body:not(.chat-sidebar-open) .inspect-panel {
+    left: 50%;
+    bottom: 28px;
+  }
+  /* Trigger pill smaller on mobile */
+  .gsnowgpt-trigger {
+    padding: 9px 14px 9px 12px;
+    bottom: 16px;
+    right: 16px;
+  }
+}

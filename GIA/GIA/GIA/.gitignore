@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.DS_Store
+
+# Heavy source/intermediate meshes — runtime uses ManequinsRuntimeLOD + ShoesBagsShowroomWeb only.
+# Raw showroom folder contains files > GitHub 100MB limit; regenerate web copies via npm run optimize:showroom-accessories.
+ASSETS/Models/SHOES&BAGS-GLB-SHOWROOM/
+ASSETS/Models/Manequins/
+ASSETS/Models/ManequinsOptimized/
+.vercel

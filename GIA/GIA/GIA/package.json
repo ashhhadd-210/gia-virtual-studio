@@ -1,0 +1,28 @@
+{
+  "name": "gia",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GIA luxury indoor showroom walkthrough built with Babylon.js and Vite.",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "optimize:showroom-accessories": "node scripts/optimize-showroom-accessories.mjs",
+    "optimize:mannequins": "node scripts/optimize-mannequins.mjs",
+    "optimize:accessories-inplace": "node scripts/optimize-mannequins.mjs ASSETS/Models/ShoesBagsShowroomWeb",
+    "optimize:textures": "node scripts/reencode-fake-webp.mjs",
+    "downsize:glb-textures": "node scripts/downsize-mannequin-textures.mjs"
+  },
+  "dependencies": {
+    "@babylonjs/core": "^8.56.1",
+    "@babylonjs/loaders": "^8.56.2",
+    "earcut": "^3.0.2",
+    "howler": "^2.2.4"
+  },
+  "devDependencies": {
+    "@gltf-transform/cli": "^4.3.0",
+    "sharp": "^0.34.5",
+    "vite": "^8.0.1"
+  }
+}

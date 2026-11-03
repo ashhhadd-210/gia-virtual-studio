@@ -1,0 +1,12 @@
+feat: gate /studio behind LicenseGate until delivery acceptance
+
+The showroom is the core deliverable. Until the developer flips
+RELEASED=true in src/components/LicenseGate.jsx (after final payment /
+acceptance has been confirmed), every visit to /studio must enter an
+access code shared privately by the developer.
+
+- Marketing pages (/, /blog, /pricing, etc.) remain open
+- Unlock persists per browser via localStorage
+- Rotating ACCESS_CODE invalidates all previously-issued unlocks (the
+  stored token includes a hash of the current code)
+- To release universally: set RELEASED=true → git push (~90s redeploy)

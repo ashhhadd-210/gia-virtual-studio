@@ -1,0 +1,20 @@
+#!/bin/sh
+# GIA V1 Frontend HOLD — pushes are disabled until delivery acceptance/payment.
+# See c:/Users/Muhammad Ashhad/Downloads/GIA/HOLD.md for context.
+#
+# This repo lives on Veni's GitHub. The prod-deploy-prep branch has the
+# LicenseGate.jsx component — pushing this without RELEASED=false invalidates
+# the gate. Do not push until paid.
+#
+# To lift the hold:  rm .git/hooks/pre-push
+#
+echo ""
+echo "============================================================"
+echo "  PUSH REFUSED — Gia-Virtual-Studio-Frontend-V1 is under HOLD"
+echo "  Reason: client/payment dispute with Veni — see HOLD.md"
+echo "  Located at: Downloads/GIA/HOLD.md"
+echo ""
+echo "  To lift: rm .git/hooks/pre-push"
+echo "============================================================"
+echo ""
+exit 1

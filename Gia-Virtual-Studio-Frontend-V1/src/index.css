@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+/* Global responsive guard rails. Cheap and load-bearing on mobile:
+   - `overflow-x: hidden` on html/body kills the single most common mobile
+     bug: a stray element wider than the viewport that causes the whole page
+     to scroll sideways.
+   - The dynamic-viewport `min-height: 100dvh` utility class fixes the iOS
+     Safari 100vh trap for any page that uses it.
+   - `text-size-adjust: 100%` stops iOS Safari from auto-zooming text in
+     landscape (which mis-aligns Tailwind sizing). */
+html, body {
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Drop-in replacement for `min-h-screen` on full-page wrappers — use this
+   class instead and content stays sized correctly when the iOS URL bar
+   appears/disappears. `100vh` is the fallback for ancient browsers. */
+.min-h-screen-dvh {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 3px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 4px;
+  }

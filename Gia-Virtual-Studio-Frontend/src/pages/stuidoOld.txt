@@ -1,0 +1,1504 @@
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { useState, useEffect } from 'react';
+// import StudioScene from '../components/studio/StudioScene';
+// import ProductModal from '../components/studio/ProductModal';
+// import ChatbotModal from '../components/studio/ChatbotModal';
+
+// export default function StudioPage() {
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [chatProduct, setChatProduct] = useState(null);
+//   const [enterStudio, setEnterStudio] = useState(false);
+//   const [isMobile, setIsMobile] = useState(false);
+
+//   useEffect(() => {
+//     const checkMobile = () => setIsMobile(window.innerWidth < 768);
+//     checkMobile();
+//     window.addEventListener('resize', checkMobile);
+//     return () => window.removeEventListener('resize', checkMobile);
+//   }, []);
+
+//   // Lock body scroll when entering studio (Desktop only)
+//   useEffect(() => {
+//     if (isMobile || !enterStudio) {
+//       document.body.style.overflow = '';
+//       document.body.style.position = '';
+//       document.body.style.top = '';
+//       document.body.style.width = '';
+//       return;
+//     }
+//     const scrollY = window.scrollY;
+//     document.body.style.position = 'fixed';
+//     document.body.style.top = `-${scrollY}px`;
+//     document.body.style.width = '100%';
+//     document.body.style.overflow = 'hidden';
+//     return () => {
+//       document.body.style.overflow = '';
+//       document.body.style.position = '';
+//       document.body.style.top = '';
+//       document.body.style.width = '';
+//     };
+//   }, [enterStudio, isMobile]);
+
+//   const handleItemSelect = (item) => {
+//     setSelectedItem(item);
+//     setChatProduct(item);
+//   };
+
+//   const handleCloseProductModal = () => setSelectedItem(null);
+//   const handleChatClose = () => setChatProduct(null);
+
+//   // Called by StudioScene when ESC / pointer unlock fires
+//   const handleEscapePressed = () => {
+//     if (!isMobile) {
+//       setSelectedItem(null);
+//       setChatProduct(null);
+//       setEnterStudio(false);
+//     }
+//   };
+
+//   return (
+//     <div
+//       style={{
+//         width: '100vw',
+//         height: '100vh',
+//         position: 'fixed',
+//         top: 0,
+//         left: 0,
+//         background: '#000',
+//         overflow: 'hidden',
+//         // Hide cursor only while inside the studio; show it on entrance modal
+//         cursor: enterStudio ? 'none' : 'default',
+//       }}
+//     >
+//       {/* Studio Scene always mounted so 3D scene stays alive */}
+//       <StudioScene
+//         onItemSelect={handleItemSelect}
+//         onEscapePressed={handleEscapePressed}
+//       />
+
+//       {/* Entrance Modal – shown when NOT in studio */}
+//       {!enterStudio && (
+//         <div
+//           style={{
+//             position: 'fixed',
+//             top: 0,
+//             left: 0,
+//             right: 0,
+//             bottom: 0,
+//             display: 'flex',
+//             alignItems: 'center',
+//             justifyContent: 'center',
+//             background: 'rgba(0, 0, 0, 0.95)',
+//             zIndex: 100,
+//             backdropFilter: 'blur(5px)',
+//             cursor: 'default', // always show cursor on entrance modal
+//           }}
+//         >
+//           <div
+//             style={{
+//               textAlign: 'center',
+//               padding: '60px 40px',
+//               background: 'rgba(2, 6, 14, 0.98)',
+//               border: '2px solid rgba(0, 248, 255, 0.6)',
+//               borderRadius: '20px',
+//               boxShadow: '0 0 60px rgba(0, 248, 255, 0.4), 0 0 120px rgba(255, 0, 255, 0.25)',
+//               maxWidth: '480px',
+//             }}
+//           >
+//             <h1
+//               style={{
+//                 fontSize: '48px',
+//                 fontWeight: 800,
+//                 color: '#00f8ff',
+//                 marginBottom: '20px',
+//                 letterSpacing: '-0.5px',
+//                 textShadow: '0 0 30px rgba(0, 248, 255, 0.6)',
+//               }}
+//             >
+//               Virtual Studio
+//             </h1>
+//             <p
+//               style={{
+//                 fontSize: '16px',
+//                 color: '#a0c8ff',
+//                 marginBottom: '50px',
+//                 lineHeight: 1.7,
+//                 opacity: 0.95,
+//               }}
+//             >
+//               Explore our exclusive AI-generated designs in an immersive 3D
+//               environment. Navigate with ease and interact with stunning fashion
+//               models.
+//             </p>
+//             <button
+//               onClick={() => setEnterStudio(true)}
+//               style={{
+//                 padding: '16px 40px',
+//                 fontSize: '18px',
+//                 fontWeight: 700,
+//                 background: 'linear-gradient(135deg, #00f8ff, #00bfff)',
+//                 border: 'none',
+//                 borderRadius: '12px',
+//                 color: '#000',
+//                 cursor: 'pointer',
+//                 transition: 'all 0.3s ease',
+//                 boxShadow: '0 0 25px rgba(0, 248, 255, 0.5)',
+//                 textTransform: 'uppercase',
+//                 letterSpacing: '2px',
+//               }}
+//               onMouseEnter={(e) => {
+//                 e.target.style.transform = 'scale(1.08)';
+//                 e.target.style.boxShadow = '0 0 40px rgba(0, 248, 255, 0.8)';
+//               }}
+//               onMouseLeave={(e) => {
+//                 e.target.style.transform = 'scale(1)';
+//                 e.target.style.boxShadow = '0 0 25px rgba(0, 248, 255, 0.5)';
+//               }}
+//             >
+//               ENTER STUDIO
+//             </button>
+
+//             <div
+//               style={{
+//                 marginTop: '40px',
+//                 paddingTop: '30px',
+//                 borderTop: '1px solid rgba(0, 248, 255, 0.2)',
+//               }}
+//             >
+//               <p
+//                 style={{
+//                   fontSize: '12px',
+//                   color: '#64748b',
+//                   margin: '10px 0',
+//                   fontFamily: 'monospace',
+//                 }}
+//               >
+//                 ⌨️ WASD + Arrow Keys to move
+//               </p>
+//               <p
+//                 style={{
+//                   fontSize: '12px',
+//                   color: '#64748b',
+//                   margin: '10px 0',
+//                   fontFamily: 'monospace',
+//                 }}
+//               >
+//                 🖱️ No mouse scroll • Y to interact • V to vote • X to close
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Product Modal */}
+//       {selectedItem && (
+//         <ProductModal item={selectedItem} onClose={handleCloseProductModal} />
+//       )}
+
+//       {/* Chatbot Modal */}
+//       <ChatbotModal product={chatProduct} onClose={handleChatClose} />
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { useState, useEffect } from 'react';
+// import StudioScene from '../components/studio/StudioScene';
+// import ProductModal from '../components/studio/ProductModal';
+// import ChatbotModal from '../components/studio/ChatbotModal';
+
+// export default function StudioPage() {
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [chatProduct, setChatProduct] = useState(null);
+//   const [enterStudio, setEnterStudio] = useState(false);
+
+//   // Mobile detection
+//   const [isMobile, setIsMobile] = useState(false);
+
+//   useEffect(() => {
+//     const checkMobile = () => {
+//       setIsMobile(window.innerWidth < 768);
+//     };
+//     checkMobile();
+//     window.addEventListener('resize', checkMobile);
+//     return () => window.removeEventListener('resize', checkMobile);
+//   }, []);
+
+//   // Lock body scroll when entering studio (Desktop only)
+//   useEffect(() => {
+//     if (isMobile || !enterStudio) {
+//       document.body.style.overflow = '';
+//       document.body.style.position = '';
+//       document.body.style.top = '';
+//       document.body.style.width = '';
+//       return;
+//     }
+
+//     const scrollY = window.scrollY;
+//     document.body.style.position = 'fixed';
+//     document.body.style.top = `-${scrollY}px`;
+//     document.body.style.width = '100%';
+//     document.body.style.overflow = 'hidden';
+
+//     return () => {
+//       document.body.style.overflow = '';
+//       document.body.style.position = '';
+//       document.body.style.top = '';
+//       document.body.style.width = '';
+//     };
+//   }, [enterStudio, isMobile]);
+
+//   const handleItemSelect = (item) => {
+//     setSelectedItem(item);
+//     setChatProduct(item);
+//   };
+
+//   const handleCloseProductModal = () => {
+//     setSelectedItem(null);
+//   };
+
+//   const handleChatClose = () => {
+//     setChatProduct(null);
+//   };
+
+//   // ====================== ESC KEY HANDLER ======================
+// // ====================== ESC KEY HANDLER ======================
+// useEffect(() => {
+//   const handleKeyDown = (e) => {
+//     if (e.code === 'Escape' && !isMobile) {
+
+//       // Close all modals immediately
+//       setSelectedItem(null);
+//       setChatProduct(null);
+
+//       // Exit studio and show Entrance Modal
+//       if (enterStudio) {
+//         setEnterStudio(false);
+//       }
+//     }
+//   };
+
+//   window.addEventListener('keydown', handleKeyDown);
+//   return () => window.removeEventListener('keydown', handleKeyDown);
+// }, [enterStudio, isMobile]);   // Only these two dependencies
+
+
+//   // ====================== DESKTOP VIEW ======================
+//   return (
+//     <div
+//       style={{
+//         width: '100vw',
+//         height: '100vh',
+//         position: 'fixed',
+//         top: 0,
+//         left: 0,
+//         background: '#000',
+//         overflow: 'hidden',
+//       }}
+//     >
+//       {/* Studio Scene */}
+//       <StudioScene onItemSelect={handleItemSelect} />
+
+//       {/* Entrance Modal - Shown when NOT in studio */}
+//       {!enterStudio && (
+//         <div
+//           style={{
+//             position: 'fixed',
+//             top: 0,
+//             left: 0,
+//             right: 0,
+//             bottom: 0,
+//             display: 'flex',
+//             alignItems: 'center',
+//             justifyContent: 'center',
+//             background: 'rgba(0, 0, 0, 0.95)',
+//             zIndex: 100,
+//             backdropFilter: 'blur(5px)',
+//           }}
+//         >
+//           {/* ... your entrance modal content (unchanged) ... */}
+//           <div
+//             style={{
+//               textAlign: 'center',
+//               padding: '60px 40px',
+//               background: 'rgba(2, 6, 14, 0.98)',
+//               border: '2px solid rgba(0, 248, 255, 0.6)',
+//               borderRadius: '20px',
+//               boxShadow: '0 0 60px rgba(0, 248, 255, 0.4), 0 0 120px rgba(255, 0, 255, 0.25)',
+//               maxWidth: '480px',
+//             }}
+//           >
+//             <h1 style={{
+//               fontSize: '48px',
+//               fontWeight: 800,
+//               color: '#00f8ff',
+//               marginBottom: '20px',
+//               letterSpacing: '-0.5px',
+//               textShadow: '0 0 30px rgba(0, 248, 255, 0.6)',
+//             }}>
+//               Virtual Studio
+//             </h1>
+//             <p style={{
+//               fontSize: '16px',
+//               color: '#a0c8ff',
+//               marginBottom: '50px',
+//               lineHeight: 1.7,
+//               opacity: 0.95,
+//             }}>
+//               Explore our exclusive AI-generated designs in an immersive 3D environment. Navigate with ease and interact with stunning fashion models.
+//             </p>
+//             <button
+//               onClick={() => setEnterStudio(true)}
+//               style={{
+//                 padding: '16px 40px',
+//                 fontSize: '18px',
+//                 fontWeight: 700,
+//                 background: 'linear-gradient(135deg, #00f8ff, #00bfff)',
+//                 border: 'none',
+//                 borderRadius: '12px',
+//                 color: '#000',
+//                 cursor: 'pointer',
+//                 transition: 'all 0.3s ease',
+//                 boxShadow: '0 0 25px rgba(0, 248, 255, 0.5)',
+//                 textTransform: 'uppercase',
+//                 letterSpacing: '2px',
+//               }}
+//               onMouseEnter={(e) => {
+//                 e.target.style.transform = 'scale(1.08)';
+//                 e.target.style.boxShadow = '0 0 40px rgba(0, 248, 255, 0.8)';
+//               }}
+//               onMouseLeave={(e) => {
+//                 e.target.style.transform = 'scale(1)';
+//                 e.target.style.boxShadow = '0 0 25px rgba(0, 248, 255, 0.5)';
+//               }}
+//             >
+//               ENTER STUDIO
+//             </button>
+
+//             <div style={{
+//               marginTop: '40px',
+//               paddingTop: '30px',
+//               borderTop: '1px solid rgba(0, 248, 255, 0.2)',
+//             }}>
+//               <p style={{ fontSize: '12px', color: '#64748b', margin: '10px 0', fontFamily: 'monospace' }}>
+//                 ⌨️ WASD + Arrow Keys to move
+//               </p>
+//               <p style={{ fontSize: '12px', color: '#64748b', margin: '10px 0', fontFamily: 'monospace' }}>
+//                 🖱️ No mouse scroll • Y to interact • V to vote • X to close
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Product Modal */}
+//       {selectedItem && (
+//         <ProductModal
+//           item={selectedItem}
+//           onClose={handleCloseProductModal}
+//         />
+//       )}
+
+//       {/* Chatbot Modal */}
+//       <ChatbotModal
+//         product={chatProduct}
+//         onClose={handleChatClose}
+//       />
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// uploaded code
+// import { useState, useEffect } from 'react';
+// import StudioScene from '../components/studio/StudioScene';
+// import ProductModal from '../components/studio/ProductModal';
+// import ChatbotModal from '../components/studio/ChatbotModal';
+// import Navbar from '../components/ui/Navbar';
+// import Footer from '../components/ui/Footer';
+
+// export default function StudioPage() {
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [chatProduct, setChatProduct] = useState(null);
+//   const [enterStudio, setEnterStudio] = useState(false);
+
+//   // Mobile detection
+//   const [isMobile, setIsMobile] = useState(false);
+
+//   useEffect(() => {
+//     const checkMobile = () => {
+//       setIsMobile(window.innerWidth < 768);
+//     };
+//     checkMobile();
+//     window.addEventListener('resize', checkMobile);
+//     return () => window.removeEventListener('resize', checkMobile);
+//   }, []);
+
+//   // Lock body scroll when entering studio (Desktop only)
+//   useEffect(() => {
+//     if (isMobile || !enterStudio) {
+//       document.body.style.overflow = '';
+//       document.body.style.position = '';
+//       document.body.style.top = '';
+//       document.body.style.width = '';
+//       return;
+//     }
+
+//     const scrollY = window.scrollY;
+//     document.body.style.position = 'fixed';
+//     document.body.style.top = `-${scrollY}px`;
+//     document.body.style.width = '100%';
+//     document.body.style.overflow = 'hidden';
+
+//     return () => {
+//       document.body.style.overflow = '';
+//       document.body.style.position = '';
+//       document.body.style.top = '';
+//       document.body.style.width = '';
+//     };
+//   }, [enterStudio, isMobile]);
+
+//   const handleItemSelect = (item) => {
+//     setSelectedItem(item);
+//     setChatProduct(item);
+//   };
+
+//   const handleCloseProductModal = () => {
+//     setSelectedItem(null);
+//   };
+
+//   const handleChatClose = () => {
+//     setChatProduct(null);
+//   };
+
+//   // ====================== ESC KEY HANDLER ======================
+// // ====================== ESC KEY HANDLER ======================
+// useEffect(() => {
+//   const handleKeyDown = (e) => {
+//     if (e.code === 'Escape' && !isMobile) {
+
+//       // Close all modals immediately
+//       setSelectedItem(null);
+//       setChatProduct(null);
+
+//       // Exit studio and show Entrance Modal
+//       if (enterStudio) {
+//         setEnterStudio(false);
+//       }
+//     }
+//   };
+
+//   window.addEventListener('keydown', handleKeyDown);
+//   return () => window.removeEventListener('keydown', handleKeyDown);
+// }, [enterStudio, isMobile]);   // Only these two dependencies
+
+//   // ====================== MOBILE VIEW ======================
+//   if (isMobile) {
+//     return (
+//       <>
+//         <Navbar />
+//         <div style={{
+//           width: '100vw',
+//           minHeight: '100vh',
+//           background: '#000',
+//           display: 'flex',
+//           alignItems: 'center',
+//           justifyContent: 'center',
+//           padding: '20px',
+//         }}>
+//           <div style={{
+//             textAlign: 'center',
+//             padding: '40px 20px',
+//             background: 'rgba(2, 6, 14, 0.98)',
+//             border: '2px solid rgba(0, 248, 255, 0.6)',
+//             borderRadius: '20px',
+//             boxShadow: '0 0 60px rgba(0, 248, 255, 0.4), 0 0 120px rgba(255, 0, 255, 0.25)',
+//             maxWidth: 'calc(100vw - 40px)',
+//           }}>
+//             <h1 style={{
+//               fontSize: '36px',
+//               fontWeight: 800,
+//               color: '#00f8ff',
+//               marginBottom: '20px',
+//               letterSpacing: '-0.5px',
+//               textShadow: '0 0 30px rgba(0, 248, 255, 0.6)',
+//             }}>
+//               Coming Soon
+//             </h1>
+//             <p style={{
+//               fontSize: '16px',
+//               color: '#a0c8ff',
+//               marginBottom: '30px',
+//               lineHeight: 1.8,
+//               opacity: 0.95,
+//             }}>
+//               The Virtual Showroom will be available shortly on mobile.
+//             </p>
+//             <p style={{
+//               fontSize: '14px',
+//               color: '#64748b',
+//               marginBottom: '40px',
+//               lineHeight: 1.6,
+//             }}>
+//               For now, please visit on desktop to experience our exclusive AI-generated designs in full 3D immersion.
+//             </p>
+//             <p style={{
+//               fontSize: '12px',
+//               color: '#00f8ff',
+//               opacity: 0.7,
+//               fontStyle: 'italic',
+//             }}>
+//               We're working on optimizing it for mobile! 🚀
+//             </p>
+//           </div>
+//         </div>
+//         <Footer />
+//       </>
+//     );
+//   }
+
+//   // ====================== DESKTOP VIEW ======================
+//   return (
+//     <div
+//       style={{
+//         width: '100vw',
+//         height: '100vh',
+//         position: 'fixed',
+//         top: 0,
+//         left: 0,
+//         background: '#000',
+//         overflow: 'hidden',
+//       }}
+//     >
+//       {/* Studio Scene */}
+//       <StudioScene onItemSelect={handleItemSelect} />
+
+//       {/* Entrance Modal - Shown when NOT in studio */}
+//       {!enterStudio && (
+//         <div
+//           style={{
+//             position: 'fixed',
+//             top: 0,
+//             left: 0,
+//             right: 0,
+//             bottom: 0,
+//             display: 'flex',
+//             alignItems: 'center',
+//             justifyContent: 'center',
+//             background: 'rgba(0, 0, 0, 0.95)',
+//             zIndex: 100,
+//             backdropFilter: 'blur(5px)',
+//           }}
+//         >
+//           {/* ... your entrance modal content (unchanged) ... */}
+//           <div
+//             style={{
+//               textAlign: 'center',
+//               padding: '60px 40px',
+//               background: 'rgba(2, 6, 14, 0.98)',
+//               border: '2px solid rgba(0, 248, 255, 0.6)',
+//               borderRadius: '20px',
+//               boxShadow: '0 0 60px rgba(0, 248, 255, 0.4), 0 0 120px rgba(255, 0, 255, 0.25)',
+//               maxWidth: '480px',
+//             }}
+//           >
+//             <h1 style={{
+//               fontSize: '48px',
+//               fontWeight: 800,
+//               color: '#00f8ff',
+//               marginBottom: '20px',
+//               letterSpacing: '-0.5px',
+//               textShadow: '0 0 30px rgba(0, 248, 255, 0.6)',
+//             }}>
+//               Virtual Studio
+//             </h1>
+//             <p style={{
+//               fontSize: '16px',
+//               color: '#a0c8ff',
+//               marginBottom: '50px',
+//               lineHeight: 1.7,
+//               opacity: 0.95,
+//             }}>
+//               Explore our exclusive AI-generated designs in an immersive 3D environment. Navigate with ease and interact with stunning fashion models.
+//             </p>
+//             <button
+//               onClick={() => setEnterStudio(true)}
+//               style={{
+//                 padding: '16px 40px',
+//                 fontSize: '18px',
+//                 fontWeight: 700,
+//                 background: 'linear-gradient(135deg, #00f8ff, #00bfff)',
+//                 border: 'none',
+//                 borderRadius: '12px',
+//                 color: '#000',
+//                 cursor: 'pointer',
+//                 transition: 'all 0.3s ease',
+//                 boxShadow: '0 0 25px rgba(0, 248, 255, 0.5)',
+//                 textTransform: 'uppercase',
+//                 letterSpacing: '2px',
+//               }}
+//               onMouseEnter={(e) => {
+//                 e.target.style.transform = 'scale(1.08)';
+//                 e.target.style.boxShadow = '0 0 40px rgba(0, 248, 255, 0.8)';
+//               }}
+//               onMouseLeave={(e) => {
+//                 e.target.style.transform = 'scale(1)';
+//                 e.target.style.boxShadow = '0 0 25px rgba(0, 248, 255, 0.5)';
+//               }}
+//             >
+//               ENTER STUDIO
+//             </button>
+
+//             <div style={{
+//               marginTop: '40px',
+//               paddingTop: '30px',
+//               borderTop: '1px solid rgba(0, 248, 255, 0.2)',
+//             }}>
+//               <p style={{ fontSize: '12px', color: '#64748b', margin: '10px 0', fontFamily: 'monospace' }}>
+//                 ⌨️ WASD + Arrow Keys to move
+//               </p>
+//               <p style={{ fontSize: '12px', color: '#64748b', margin: '10px 0', fontFamily: 'monospace' }}>
+//                 🖱️ No mouse scroll • Y to interact • V to vote • X to close
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Product Modal */}
+//       {selectedItem && (
+//         <ProductModal
+//           item={selectedItem}
+//           onClose={handleCloseProductModal}
+//         />
+//       )}
+
+//       {/* Chatbot Modal */}
+//       <ChatbotModal
+//         product={chatProduct}
+//         onClose={handleChatClose}
+//       />
+//     </div>
+//   );
+// }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// import { useState, useEffect } from 'react';
+// import StudioScene from '../components/studio/StudioScene';
+// import ProductModal from '../components/studio/ProductModal';
+// import ChatbotModal from '../components/studio/ChatbotModal';
+
+// export default function StudioPage() {
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [chatProduct, setChatProduct] = useState(null);
+//   const [enterStudio, setEnterStudio] = useState(false);
+
+//   // Lock body scroll when entering studio
+//   useEffect(() => {
+//     if (enterStudio) {
+//       document.body.style.overflow = 'hidden';
+//       document.body.style.position = 'fixed';
+//       document.body.style.width = '100%';
+//       return () => {
+//         document.body.style.overflow = '';
+//         document.body.style.position = '';
+//         document.body.style.width = '';
+//       };
+//     }
+//   }, [enterStudio]);
+
+//   // Lock body scroll only when ProductModal is open
+//   useEffect(() => {
+//     if (selectedItem && enterStudio) {
+//       const scrollY = window.scrollY;
+//       document.body.style.position = 'fixed';
+//       document.body.style.top = `-${scrollY}px`;
+//       document.body.style.width = '100%';
+//       document.body.style.overflow = 'hidden';
+//     } else if (enterStudio) {
+//       document.body.style.position = 'fixed';
+//       document.body.style.width = '100%';
+//       document.body.style.overflow = 'hidden';
+//     }
+
+//     return () => {
+//       if (!enterStudio) {
+//         document.body.style.position = '';
+//         document.body.style.top = '';
+//         document.body.style.width = '';
+//         document.body.style.overflow = '';
+//       }
+//     };
+//   }, [selectedItem, enterStudio]);
+
+//   const handleItemSelect = (item) => {
+//     setSelectedItem(item);
+//     setChatProduct(item);
+//   };
+
+//   const handleCloseProductModal = () => {
+//     setSelectedItem(null);
+//   };
+
+//   const handleChatClose = () => {
+//     setChatProduct(null);
+//   };
+
+//   // Exit studio on ESC key
+//   useEffect(() => {
+//     const handleKeyDown = (e) => {
+//       if (e.code === 'Escape' && enterStudio) {
+//         setEnterStudio(false);
+//       }
+//     };
+//     window.addEventListener('keydown', handleKeyDown);
+//     return () => window.removeEventListener('keydown', handleKeyDown);
+//   }, [enterStudio]);
+
+//   return (
+//     <div style={{ width: '100vw', height: '100vh', position: 'fixed', top: 0, left: 0, background: '#000' }}>
+//       {/* Studio - always rendered but behind modal */}
+//       <StudioScene onItemSelect={handleItemSelect} />
+
+//       {/* Entrance Modal - click to enter full screen */}
+//       {!enterStudio && (
+//         <div
+//           style={{
+//             position: 'fixed',
+//             top: 0,
+//             left: 0,
+//             right: 0,
+//             bottom: 0,
+//             display: 'flex',
+//             alignItems: 'center',
+//             justifyContent: 'center',
+//             background: 'rgba(0, 0, 0, 0.95)',
+//             zIndex: 100,
+//             backdropFilter: 'blur(5px)',
+//           }}
+//         >
+//           <div
+//             style={{
+//               textAlign: 'center',
+//               padding: '60px 40px',
+//               background: 'rgba(2, 6, 14, 0.98)',
+//               border: '2px solid rgba(0, 248, 255, 0.6)',
+//               borderRadius: '20px',
+//               boxShadow: '0 0 60px rgba(0, 248, 255, 0.4), 0 0 120px rgba(255, 0, 255, 0.25)',
+//               maxWidth: '480px',
+//             }}
+//           >
+//             <h1
+//               style={{
+//                 fontSize: '48px',
+//                 fontWeight: 800,
+//                 color: '#00f8ff',
+//                 marginBottom: '20px',
+//                 letterSpacing: '-0.5px',
+//                 textShadow: '0 0 30px rgba(0, 248, 255, 0.6)',
+//               }}
+//             >
+//               Virtual Studio
+//             </h1>
+//             <p
+//               style={{
+//                 fontSize: '16px',
+//                 color: '#a0c8ff',
+//                 marginBottom: '50px',
+//                 lineHeight: 1.7,
+//                 opacity: 0.95,
+//               }}
+//             >
+//               Explore our exclusive AI-generated designs in an immersive 3D environment. Navigate with ease and interact with stunning fashion models.
+//             </p>
+//             <button
+//               onClick={() => setEnterStudio(true)}
+//               style={{
+//                 padding: '16px 40px',
+//                 fontSize: '18px',
+//                 fontWeight: 700,
+//                 background: 'linear-gradient(135deg, #00f8ff, #00bfff)',
+//                 border: 'none',
+//                 borderRadius: '12px',
+//                 color: '#000',
+//                 cursor: 'pointer',
+//                 transition: 'all 0.3s ease',
+//                 boxShadow: '0 0 25px rgba(0, 248, 255, 0.5)',
+//                 textTransform: 'uppercase',
+//                 letterSpacing: '2px',
+//               }}
+//               onMouseEnter={(e) => {
+//                 e.target.style.transform = 'scale(1.08)';
+//                 e.target.style.boxShadow = '0 0 40px rgba(0, 248, 255, 0.8)';
+//               }}
+//               onMouseLeave={(e) => {
+//                 e.target.style.transform = 'scale(1)';
+//                 e.target.style.boxShadow = '0 0 25px rgba(0, 248, 255, 0.5)';
+//               }}
+//             >
+//               ENTER STUDIO
+//             </button>
+//             <div
+//               style={{
+//                 marginTop: '40px',
+//                 paddingTop: '30px',
+//                 borderTop: '1px solid rgba(0, 248, 255, 0.2)',
+//               }}
+//             >
+//               <p style={{ fontSize: '12px', color: '#64748b', margin: '10px 0', fontFamily: 'monospace' }}>
+//                 ⌨️ WASD + Arrow Keys to move
+//               </p>
+//               <p style={{ fontSize: '12px', color: '#64748b', margin: '10px 0', fontFamily: 'monospace' }}>
+//                 🖱️ No mouse scroll • Y to interact • V to vote • X to close
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Product Modal */}
+//       {selectedItem && (
+//         <ProductModal 
+//           item={selectedItem} 
+//           onClose={handleCloseProductModal} 
+//         />
+//       )}
+
+//       {/* Chatbot */}
+//       <ChatbotModal 
+//         product={chatProduct}
+//         onClose={handleChatClose}
+//       />
+//     </div>
+//   );
+// }
+
+
+
+
+// import { useState, useEffect } from 'react';
+// import StudioScene from '../components/studio/StudioScene';
+// import ProductModal from '../components/studio/ProductModal';
+// import ChatbotModal from '../components/studio/ChatbotModal';
+
+// export default function StudioPage() {
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [chatProduct, setChatProduct] = useState(null);
+//   const [enterStudio, setEnterStudio] = useState(false);
+
+//   // Lock body scroll when entering studio
+//   useEffect(() => {
+//     if (enterStudio) {
+//       document.body.style.overflow = 'hidden';
+//       document.body.style.position = 'fixed';
+//       document.body.style.width = '100%';
+//       return () => {
+//         document.body.style.overflow = '';
+//         document.body.style.position = '';
+//         document.body.style.width = '';
+//       };
+//     }
+//   }, [enterStudio]);
+
+//   // Handle scroll locking
+//   useEffect(() => {
+//     if (!enterStudio) {
+//       document.body.style.position = '';
+//       document.body.style.top = '';
+//       document.body.style.width = '';
+//       document.body.style.overflow = '';
+//       return;
+//     }
+
+//     if (selectedItem) {
+//       const scrollY = window.scrollY;
+//       document.body.style.position = 'fixed';
+//       document.body.style.top = `-${scrollY}px`;
+//       document.body.style.width = '100%';
+//       document.body.style.overflow = 'hidden';
+//     } else {
+//       document.body.style.position = 'fixed';
+//       document.body.style.width = '100%';
+//       document.body.style.overflow = 'hidden';
+//       document.body.style.top = '';
+//     }
+//   }, [selectedItem, enterStudio]);
+
+//   const handleItemSelect = (item) => {
+//     setSelectedItem(item);
+//     setChatProduct(item);
+//   };
+
+//   const handleCloseProductModal = () => {
+//     setSelectedItem(null);
+//   };
+
+//   const handleChatClose = () => {
+//     setChatProduct(null);
+//   };
+
+//   // ESC KEY: First press exits studio immediately, even if ProductModal is open
+//   useEffect(() => {
+//     const handleKeyDown = (e) => {
+//       if (e.code === 'Escape' && enterStudio) {
+//         // Immediately exit studio (closes modal + exits)
+//         setEnterStudio(false);
+//         setSelectedItem(null);   // Also close modal instantly
+//       }
+//     };
+
+//     window.addEventListener('keydown', handleKeyDown);
+//     return () => window.removeEventListener('keydown', handleKeyDown);
+//   }, [enterStudio]);
+
+
+//    // Check if mobile
+//    const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+
+//    // Show mobile coming soon message
+//    if (isMobile) {
+//      return (
+//        <div style={{
+//          width: '100vw',
+//          height: '100vh',
+//          position: 'fixed',
+//          top: 0,
+//          left: 0,
+//          background: '#000',
+//          display: 'flex',
+//          alignItems: 'center',
+//          justifyContent: 'center',
+//          zIndex: 999,
+//        }}>
+//          <div style={{
+//            textAlign: 'center',
+//            padding: '40px 20px',
+//            background: 'rgba(2, 6, 14, 0.98)',
+//            border: '2px solid rgba(0, 248, 255, 0.6)',
+//            borderRadius: '20px',
+//            boxShadow: '0 0 60px rgba(0, 248, 255, 0.4), 0 0 120px rgba(255, 0, 255, 0.25)',
+//            maxWidth: 'calc(100vw - 40px)',
+//            margin: '20px',
+//          }}>
+//            <h1 style={{
+//              fontSize: '36px',
+//              fontWeight: 800,
+//              color: '#00f8ff',
+//              marginBottom: '20px',
+//              letterSpacing: '-0.5px',
+//              textShadow: '0 0 30px rgba(0, 248, 255, 0.6)',
+//            }}>
+//              Coming Soon
+//            </h1>
+//            <p style={{
+//              fontSize: '16px',
+//              color: '#a0c8ff',
+//              marginBottom: '30px',
+//              lineHeight: 1.8,
+//              opacity: 0.95,
+//            }}>
+//              The Virtual Showroom will be available shortly on mobile.
+//            </p>
+//            <p style={{
+//              fontSize: '14px',
+//              color: '#64748b',
+//              marginBottom: '40px',
+//              lineHeight: 1.6,
+//            }}>
+//              For now, please visit on desktop to experience our exclusive AI-generated designs in full 3D immersion.
+//            </p>
+//            <p style={{
+//              fontSize: '12px',
+//              color: '#00f8ff',
+//              opacity: 0.7,
+//              fontStyle: 'italic',
+//            }}>
+//              We're working on optimizing it for mobile! 🚀
+//            </p>
+//          </div>
+//        </div>
+//      );
+//    }
+
+//   return (
+//     <div
+//       style={{
+//         width: '100vw',
+//         height: '100vh',
+//         position: 'fixed',
+//         top: 0,
+//         left: 0,
+//         background: '#000',
+//         overflow: 'hidden',
+//       }}
+//     >
+//       {/* Studio Scene */}
+//       <StudioScene onItemSelect={handleItemSelect} />
+
+//       {/* Entrance Modal */}
+//       {!enterStudio && (
+//         <div
+//           style={{
+//             position: 'fixed',
+//             top: 0,
+//             left: 0,
+//             right: 0,
+//             bottom: 0,
+//             display: 'flex',
+//             alignItems: 'center',
+//             justifyContent: 'center',
+//             background: 'rgba(0, 0, 0, 0.95)',
+//             zIndex: 100,
+//             backdropFilter: 'blur(5px)',
+//           }}
+//         >
+//           <div
+//             style={{
+//               textAlign: 'center',
+//               padding: '60px 40px',
+//               background: 'rgba(2, 6, 14, 0.98)',
+//               border: '2px solid rgba(0, 248, 255, 0.6)',
+//               borderRadius: '20px',
+//               boxShadow: '0 0 60px rgba(0, 248, 255, 0.4), 0 0 120px rgba(255, 0, 255, 0.25)',
+//               maxWidth: '480px',
+//             }}
+//           >
+//             <h1
+//               style={{
+//                 fontSize: '48px',
+//                 fontWeight: 800,
+//                 color: '#00f8ff',
+//                 marginBottom: '20px',
+//                 letterSpacing: '-0.5px',
+//                 textShadow: '0 0 30px rgba(0, 248, 255, 0.6)',
+//               }}
+//             >
+//               Virtual Studio
+//             </h1>
+//             <p
+//               style={{
+//                 fontSize: '16px',
+//                 color: '#a0c8ff',
+//                 marginBottom: '50px',
+//                 lineHeight: 1.7,
+//                 opacity: 0.95,
+//               }}
+//             >
+//               Explore our exclusive AI-generated designs in an immersive 3D environment. Navigate with ease and interact with stunning fashion models.
+//             </p>
+//             <button
+//               onClick={() => setEnterStudio(true)}
+//               style={{
+//                 padding: '16px 40px',
+//                 fontSize: '18px',
+//                 fontWeight: 700,
+//                 background: 'linear-gradient(135deg, #00f8ff, #00bfff)',
+//                 border: 'none',
+//                 borderRadius: '12px',
+//                 color: '#000',
+//                 cursor: 'pointer',
+//                 transition: 'all 0.3s ease',
+//                 boxShadow: '0 0 25px rgba(0, 248, 255, 0.5)',
+//                 textTransform: 'uppercase',
+//                 letterSpacing: '2px',
+//               }}
+//               onMouseEnter={(e) => {
+//                 e.target.style.transform = 'scale(1.08)';
+//                 e.target.style.boxShadow = '0 0 40px rgba(0, 248, 255, 0.8)';
+//               }}
+//               onMouseLeave={(e) => {
+//                 e.target.style.transform = 'scale(1)';
+//                 e.target.style.boxShadow = '0 0 25px rgba(0, 248, 255, 0.5)';
+//               }}
+//             >
+//               ENTER STUDIO
+//             </button>
+
+//             <div
+//               style={{
+//                 marginTop: '40px',
+//                 paddingTop: '30px',
+//                 borderTop: '1px solid rgba(0, 248, 255, 0.2)',
+//               }}
+//             >
+//               <p style={{ fontSize: '12px', color: '#64748b', margin: '10px 0', fontFamily: 'monospace' }}>
+//                 ⌨️ WASD + Arrow Keys to move
+//               </p>
+//               <p style={{ fontSize: '12px', color: '#64748b', margin: '10px 0', fontFamily: 'monospace' }}>
+//                 🖱️ No mouse scroll • Y to interact • V to vote • X to close
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Product Modal */}
+//       {selectedItem && (
+//         <ProductModal 
+//           item={selectedItem} 
+//           onClose={handleCloseProductModal} 
+//         />
+//       )}
+
+//       {/* Chatbot Modal */}
+//       <ChatbotModal 
+//         product={chatProduct}
+//         onClose={handleChatClose}
+//       />
+//     </div>
+//   );
+// }
+
+
+
+
+// import { useState, useEffect } from 'react';
+// import StudioScene from '../components/studio/StudioScene';
+// import ProductModal from '../components/studio/ProductModal';
+// import ChatbotModal from '../components/studio/ChatbotModal';
+
+// // Import your Navbar and Footer components
+// import Navbar from '../components/ui/Navbar';        // Adjust path as needed
+// import Footer from '../components/ui/Footer';        // Adjust path as needed
+
+// export default function StudioPage() {
+//   const [selectedItem, setSelectedItem] = useState(null);
+//   const [chatProduct, setChatProduct] = useState(null);
+//   const [enterStudio, setEnterStudio] = useState(false);
+
+//   // Mobile detection
+//   const [isMobile, setIsMobile] = useState(false);
+
+//   useEffect(() => {
+//     const checkMobile = () => {
+//       setIsMobile(window.innerWidth < 768);
+//     };
+
+//     checkMobile();
+//     window.addEventListener('resize', checkMobile);
+
+//     return () => window.removeEventListener('resize', checkMobile);
+//   }, []);
+
+//   // Lock body scroll when entering studio (Desktop only)
+//   useEffect(() => {
+//     if (isMobile || !enterStudio) {
+//       document.body.style.overflow = '';
+//       document.body.style.position = '';
+//       document.body.style.top = '';
+//       document.body.style.width = '';
+//       return;
+//     }
+
+//     // Desktop studio mode
+//     const scrollY = window.scrollY;
+//     document.body.style.position = 'fixed';
+//     document.body.style.top = `-${scrollY}px`;
+//     document.body.style.width = '100%';
+//     document.body.style.overflow = 'hidden';
+
+//     return () => {
+//       document.body.style.overflow = '';
+//       document.body.style.position = '';
+//       document.body.style.top = '';
+//       document.body.style.width = '';
+//     };
+//   }, [enterStudio, isMobile, selectedItem]);
+
+//   const handleItemSelect = (item) => {
+//     setSelectedItem(item);
+//     setChatProduct(item);
+//   };
+
+//   const handleCloseProductModal = () => {
+//     setSelectedItem(null);
+//   };
+
+//   const handleChatClose = () => {
+//     setChatProduct(null);
+//   };
+
+//   // ESC KEY: Exit studio immediately
+//   useEffect(() => {
+//     const handleKeyDown = (e) => {
+//       if (e.code === 'Escape' && enterStudio && !isMobile) {
+//         setEnterStudio(false);
+//         setSelectedItem(null);
+//       }
+//     };
+
+//     window.addEventListener('keydown', handleKeyDown);
+//     return () => window.removeEventListener('keydown', handleKeyDown);
+//   }, [enterStudio, isMobile]);
+
+//   // ====================== MOBILE VIEW ======================
+//   if (isMobile) {
+//     return (
+//       <>
+//         <Navbar />
+        
+//         <div style={{
+//           width: '100vw',
+//           minHeight: '100vh',
+//           background: '#000',
+//           display: 'flex',
+//           alignItems: 'center',
+//           justifyContent: 'center',
+//           padding: '20px',
+//         }}>
+//           <div style={{
+//             textAlign: 'center',
+//             padding: '40px 20px',
+//             background: 'rgba(2, 6, 14, 0.98)',
+//             border: '2px solid rgba(0, 248, 255, 0.6)',
+//             borderRadius: '20px',
+//             boxShadow: '0 0 60px rgba(0, 248, 255, 0.4), 0 0 120px rgba(255, 0, 255, 0.25)',
+//             maxWidth: 'calc(100vw - 40px)',
+//           }}>
+//             <h1 style={{
+//               fontSize: '36px',
+//               fontWeight: 800,
+//               color: '#00f8ff',
+//               marginBottom: '20px',
+//               letterSpacing: '-0.5px',
+//               textShadow: '0 0 30px rgba(0, 248, 255, 0.6)',
+//             }}>
+//               Coming Soon
+//             </h1>
+//             <p style={{
+//               fontSize: '16px',
+//               color: '#a0c8ff',
+//               marginBottom: '30px',
+//               lineHeight: 1.8,
+//               opacity: 0.95,
+//             }}>
+//               The Virtual Showroom will be available shortly on mobile.
+//             </p>
+//             <p style={{
+//               fontSize: '14px',
+//               color: '#64748b',
+//               marginBottom: '40px',
+//               lineHeight: 1.6,
+//             }}>
+//               For now, please visit on desktop to experience our exclusive AI-generated designs in full 3D immersion.
+//             </p>
+//             <p style={{
+//               fontSize: '12px',
+//               color: '#00f8ff',
+//               opacity: 0.7,
+//               fontStyle: 'italic',
+//             }}>
+//               We're working on optimizing it for mobile! 🚀
+//             </p>
+//           </div>
+//         </div>
+
+//         <Footer />
+//       </>
+//     );
+//   }
+
+//   // ====================== DESKTOP VIEW ======================
+//   return (
+//     <div
+//       style={{
+//         width: '100vw',
+//         height: '100vh',
+//         position: 'fixed',
+//         top: 0,
+//         left: 0,
+//         background: '#000',
+//         overflow: 'hidden',
+//       }}
+//     >
+//       {/* Studio Scene */}
+//       <StudioScene onItemSelect={handleItemSelect} />
+
+//       {/* Entrance Modal */}
+//       {!enterStudio && (
+//         <div
+//           style={{
+//             position: 'fixed',
+//             top: 0,
+//             left: 0,
+//             right: 0,
+//             bottom: 0,
+//             display: 'flex',
+//             alignItems: 'center',
+//             justifyContent: 'center',
+//             background: 'rgba(0, 0, 0, 0.95)',
+//             zIndex: 100,
+//             backdropFilter: 'blur(5px)',
+//           }}
+//         >
+//           <div
+//             style={{
+//               textAlign: 'center',
+//               padding: '60px 40px',
+//               background: 'rgba(2, 6, 14, 0.98)',
+//               border: '2px solid rgba(0, 248, 255, 0.6)',
+//               borderRadius: '20px',
+//               boxShadow: '0 0 60px rgba(0, 248, 255, 0.4), 0 0 120px rgba(255, 0, 255, 0.25)',
+//               maxWidth: '480px',
+//             }}
+//           >
+//             <h1
+//               style={{
+//                 fontSize: '48px',
+//                 fontWeight: 800,
+//                 color: '#00f8ff',
+//                 marginBottom: '20px',
+//                 letterSpacing: '-0.5px',
+//                 textShadow: '0 0 30px rgba(0, 248, 255, 0.6)',
+//               }}
+//             >
+//               Virtual Studio
+//             </h1>
+//             <p
+//               style={{
+//                 fontSize: '16px',
+//                 color: '#a0c8ff',
+//                 marginBottom: '50px',
+//                 lineHeight: 1.7,
+//                 opacity: 0.95,
+//               }}
+//             >
+//               Explore our exclusive AI-generated designs in an immersive 3D environment. Navigate with ease and interact with stunning fashion models.
+//             </p>
+//             <button
+//               onClick={() => setEnterStudio(true)}
+//               style={{
+//                 padding: '16px 40px',
+//                 fontSize: '18px',
+//                 fontWeight: 700,
+//                 background: 'linear-gradient(135deg, #00f8ff, #00bfff)',
+//                 border: 'none',
+//                 borderRadius: '12px',
+//                 color: '#000',
+//                 cursor: 'pointer',
+//                 transition: 'all 0.3s ease',
+//                 boxShadow: '0 0 25px rgba(0, 248, 255, 0.5)',
+//                 textTransform: 'uppercase',
+//                 letterSpacing: '2px',
+//               }}
+//               onMouseEnter={(e) => {
+//                 e.target.style.transform = 'scale(1.08)';
+//                 e.target.style.boxShadow = '0 0 40px rgba(0, 248, 255, 0.8)';
+//               }}
+//               onMouseLeave={(e) => {
+//                 e.target.style.transform = 'scale(1)';
+//                 e.target.style.boxShadow = '0 0 25px rgba(0, 248, 255, 0.5)';
+//               }}
+//             >
+//               ENTER STUDIO
+//             </button>
+
+//             <div
+//               style={{
+//                 marginTop: '40px',
+//                 paddingTop: '30px',
+//                 borderTop: '1px solid rgba(0, 248, 255, 0.2)',
+//               }}
+//             >
+//               <p style={{ fontSize: '12px', color: '#64748b', margin: '10px 0', fontFamily: 'monospace' }}>
+//                 ⌨️ WASD + Arrow Keys to move
+//               </p>
+//               <p style={{ fontSize: '12px', color: '#64748b', margin: '10px 0', fontFamily: 'monospace' }}>
+//                 🖱️ No mouse scroll • Y to interact • V to vote • X to close
+//               </p>
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       {/* Product Modal */}
+//       {selectedItem && (
+//         <ProductModal
+//           item={selectedItem}
+//           onClose={handleCloseProductModal}
+//         />
+//       )}
+
+//       {/* Chatbot Modal */}
+//       <ChatbotModal
+//         product={chatProduct}
+//         onClose={handleChatClose}
+//       />
+//     </div>
+//   );
+// }

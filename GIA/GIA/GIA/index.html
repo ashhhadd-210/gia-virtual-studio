@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#04070a" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <title>GIA Showroom</title>
+    <link rel="stylesheet" href="/src/styles.css" />
+  </head>
+  <body class="loading-active">
+    <div
+      id="loading-screen"
+      class="loading-screen"
+      aria-busy="true"
+      aria-live="polite"
+      aria-label="Loading showroom"
+    >
+      <div class="loading-screen__inner">
+        <p class="loading-screen__brand">GIA</p>
+        <div
+          class="loading-screen__bar"
+          role="progressbar"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="0"
+          id="loading-bar"
+        >
+          <div id="loading-bar-fill" class="loading-screen__bar-fill"></div>
+        </div>
+        <p id="loading-percent" class="loading-screen__percent">0%</p>
+      </div>
+    </div>
+    <div id="app">
+      <canvas id="render-canvas" aria-label="GIA 3D showroom"></canvas>
+      <div id="hud">
+        <div id="desktop-guide" aria-live="polite">
+          <p class="desktop-guide__eyebrow">Showroom Guide</p>
+          <p id="desktop-guide-state" class="desktop-guide__state">Hover any item</p>
+          <p class="desktop-guide__detail">
+            Click any mannequin, bag, or shoe to focus it, or click the floor tiles to glide to that position.
+          </p>
+          <p id="desktop-guide-pace" class="desktop-guide__pace">
+            Click any mannequin, bag, or shoe to focus it, or click the floor tiles to fly there.
+          </p>
+        </div>
+        <div id="compass" aria-label="Compass">
+          <div class="compass-marker"></div>
+          <div id="compass-rose">
+            <span class="north">N</span>
+            <span class="east">E</span>
+            <span class="south">S</span>
+            <span class="west">W</span>
+          </div>
+        </div>
+        <div id="hover-guide" aria-hidden="true">
+          <p id="hover-guide-label" class="hover-guide__label">Inspect item</p>
+          <p id="hover-guide-action" class="hover-guide__action">Click to fly here and orbit</p>
+          <p id="hover-guide-source" class="hover-guide__source" hidden>GLB: model.glb</p>
+        </div>
+        <div id="desktop-reticle" aria-hidden="true">
+          <div class="desktop-reticle__ring"></div>
+          <div class="desktop-reticle__dot"></div>
+        </div>
+        <div id="corner-rotate-left" class="corner-rotate corner-rotate--left" aria-hidden="true">
+          <span>360</span>
+        </div>
+        <div id="corner-rotate-right" class="corner-rotate corner-rotate--right" aria-hidden="true">
+          <span>360</span>
+        </div>
+        <div id="mobile-controls" aria-hidden="true">
+          <div id="move-joystick" class="mobile-control">
+            <div class="mobile-control__ring"></div>
+            <div id="move-knob" class="mobile-control__knob"></div>
+          </div>
+          <div id="look-hint" class="mobile-look-hint">Drag right side to look</div>
+        </div>
+      </div>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

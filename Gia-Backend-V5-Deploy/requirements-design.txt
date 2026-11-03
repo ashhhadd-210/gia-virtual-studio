@@ -1,0 +1,10 @@
+# Optional dependencies for the AI design generation pipeline.
+# Install ONLY on workers that need to run /api/v1/design-engine/jobs or
+# the scheduled design cycles. The user-facing frontend never calls these
+# endpoints, so production web instances should skip this file entirely.
+#
+# Install with:  pip install -r requirements.txt -r requirements-design.txt
+# Then:          playwright install chromium
+
+-r requirements.txt
+playwright==1.58.0

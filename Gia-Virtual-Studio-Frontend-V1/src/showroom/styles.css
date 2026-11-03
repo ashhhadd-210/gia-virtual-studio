@@ -1,0 +1,802 @@
+.loading-active {
+  overflow: hidden;
+}
+
+/* ══════════════════════════════════════════════════════════
+   Loading Screen — Deep Blue Luxury Theme
+   ══════════════════════════════════════════════════════════ */
+
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 100000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(ellipse 90% 70% at 50% 40%, #030d1f 0%, #010408 80%);
+  transition: opacity 0.65s ease, visibility 0.65s ease;
+  overflow: hidden;
+}
+
+.loading-screen.loading-screen--hidden {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+/* ── Ambient orbs ───────────────────────────────────────── */
+.ls-orb {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+.ls-orb--1 {
+  width: 600px;
+  height: 600px;
+  top: -180px;
+  left: -120px;
+  background: radial-gradient(circle, rgba(10, 80, 200, 0.18) 0%, transparent 70%);
+  animation: lsOrbDrift 9s ease-in-out infinite alternate;
+}
+
+.ls-orb--2 {
+  width: 500px;
+  height: 500px;
+  bottom: -150px;
+  right: -100px;
+  background: radial-gradient(circle, rgba(0, 140, 255, 0.14) 0%, transparent 70%);
+  animation: lsOrbDrift 11s ease-in-out infinite alternate-reverse;
+}
+
+.ls-orb--3 {
+  width: 280px;
+  height: 280px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(circle, rgba(30, 100, 255, 0.09) 0%, transparent 65%);
+  animation: lsOrbPulse 4s ease-in-out infinite;
+}
+
+@keyframes lsOrbDrift {
+  from { transform: translate(0, 0) scale(1); }
+  to   { transform: translate(30px, 20px) scale(1.08); }
+}
+
+@keyframes lsOrbPulse {
+  0%, 100% { opacity: 0.6; transform: translate(-50%, -50%) scale(1); }
+  50%       { opacity: 1;   transform: translate(-50%, -50%) scale(1.15); }
+}
+
+/* ── Dot-grid overlay ───────────────────────────────────── */
+.ls-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(circle, rgba(77, 160, 255, 0.12) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 50%, black 30%, transparent 80%);
+}
+
+/* ── Horizontal scan line ───────────────────────────────── */
+.ls-scan {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(77, 170, 255, 0.0) 10%,
+    rgba(77, 170, 255, 0.6) 50%,
+    rgba(77, 170, 255, 0.0) 90%,
+    transparent 100%
+  );
+  pointer-events: none;
+  animation: lsScan 5s linear infinite;
+}
+
+@keyframes lsScan {
+  0%   { top: 0%; }
+  100% { top: 100%; }
+}
+
+/* ── Inner content ──────────────────────────────────────── */
+.loading-screen__inner {
+  position: relative;
+  width: min(660px, 86vw);
+  text-align: center;
+  z-index: 1;
+}
+
+/* ── Brand lockup ───────────────────────────────────────── */
+.ls-brand-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 0 0 10px;
+}
+
+.ls-brand-line {
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(77, 160, 255, 0.4), transparent);
+  max-width: 80px;
+}
+
+.loading-screen__brand {
+  margin: 0;
+  font-size: clamp(4rem, 7.5vw, 6rem);
+  font-weight: 200;
+  letter-spacing: 0.72em;
+  padding-left: 0.72em; /* compensate for letter-spacing on last char */
+  color: rgba(220, 238, 255, 0.96);
+  text-shadow:
+    0 0 40px rgba(77, 170, 255, 0.55),
+    0 0 80px rgba(30, 100, 255, 0.25);
+}
+
+.ls-wordmark {
+  margin: 0 0 20px;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+  color: rgba(130, 185, 255, 0.62);
+}
+
+/* ── Tagline carousel ───────────────────────────────────── */
+.ls-tagline {
+  margin: 0 0 22px;
+  font-size: clamp(1rem, 2.6vw, 1.2rem);
+  font-style: italic;
+  font-weight: 300;
+  letter-spacing: 0.06em;
+  color: rgba(180, 215, 255, 0.52);
+  opacity: 0;
+  transition: opacity 0.35s ease;
+  min-height: 1.4em;
+}
+
+.ls-tagline--visible {
+  opacity: 1;
+}
+
+/* ── Divider ────────────────────────────────────────────── */
+.ls-divider {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg, transparent 0%, rgba(77, 160, 255, 0.28) 50%, transparent 100%
+  );
+  margin: 0 0 22px;
+}
+
+/* ── Progress bar ───────────────────────────────────────── */
+.loading-screen__bar {
+  position: relative;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: visible;
+  margin-bottom: 14px;
+}
+
+/* Soft blue glow behind the fill */
+.loading-screen__bar-glow {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 10px;
+  transform: translateY(-50%);
+  border-radius: 999px;
+  background: rgba(77, 160, 255, 0.28);
+  filter: blur(4px);
+  transition: width 0.18s ease-out;
+  pointer-events: none;
+}
+
+.loading-screen__bar-fill {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  transform-origin: left center;
+  transform: scaleX(0);
+  border-radius: inherit;
+  background: linear-gradient(90deg, #1256cc, #4dc8ff 55%, #a8dcff);
+  box-shadow: 0 0 12px rgba(77, 160, 255, 0.7), 0 0 28px rgba(77, 160, 255, 0.35);
+  transition: transform 0.14s ease-out;
+}
+
+/* ── Status row ─────────────────────────────────────────── */
+.ls-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.ls-status-phrase {
+  font-size: 16px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: rgba(140, 190, 255, 0.65);
+  text-align: left;
+  flex: 1;
+}
+
+.loading-screen__percent {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  font-variant-numeric: tabular-nums;
+  color: rgba(100, 180, 255, 0.88);
+  flex-shrink: 0;
+}
+
+/* ── Feature chips ──────────────────────────────────────── */
+.ls-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.ls-chip {
+  padding: 4px 11px;
+  border: 1px solid rgba(77, 160, 255, 0.22);
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(130, 190, 255, 0.62);
+  background: rgba(77, 160, 255, 0.06);
+}
+
+/* ── Footer line ────────────────────────────────────────── */
+.ls-footer {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(100, 150, 220, 0.32);
+}
+
+.loading-active #hud {
+  opacity: 0;
+  visibility: hidden;
+}
+
+:root {
+  color: #f8efe2;
+  background: #090806;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#app {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  /* overflow: hidden; */
+}
+
+/* iOS Safari double-tap zooms the page itself, breaking 3D-scene gestures.
+   Manipulation lets pinch/swipe through to JS handlers but blocks double-tap zoom. */
+body {
+  touch-action: manipulation;
+}
+
+/* The 3D canvas is full-bleed (under the notch by design — the scene reads
+   immersive that way), but individual HUD overlays MUST respect safe-area-inset
+   so the joystick / compass / hints never sit under the iPhone notch or below
+   the home-indicator strip. Each overlay below adds the right inset to its
+   fixed-position offset. */
+.touch-device #mobile-controls .mobile-control {
+  left: calc(22px + env(safe-area-inset-left));
+  bottom: calc(24px + env(safe-area-inset-bottom));
+}
+
+.touch-device #mobile-controls .mobile-look-hint {
+  right: calc(20px + env(safe-area-inset-right));
+  bottom: calc(34px + env(safe-area-inset-bottom));
+}
+
+#compass {
+  top: calc(22px + env(safe-area-inset-top));
+  right: calc(22px + env(safe-area-inset-right));
+}
+
+@media (pointer: coarse) {
+  #compass {
+    top: calc(16px + env(safe-area-inset-top));
+    right: calc(16px + env(safe-area-inset-right));
+  }
+}
+
+#desktop-guide {
+  top: calc(22px + env(safe-area-inset-top));
+  left: calc(22px + env(safe-area-inset-left));
+}
+
+#render-canvas {
+  width: 100%;
+  /* iOS Safari's URL bar steals from `100vh`, pushing the canvas off-screen.
+     `100dvh` (dynamic viewport height) excludes the chrome and is supported on
+     iOS 15.4+ / Chrome 108+ — i.e. the only browsers we care about in 2026.
+     The 100vh line is the fallback for ancient browsers. */
+  height: 100vh;
+  height: 100dvh;
+  display: block;
+  touch-action: none;
+  outline: none;
+}
+
+body:not(.touch-device) #render-canvas {
+  cursor: default;
+}
+
+.hovering-showcase #render-canvas {
+  cursor: pointer;
+}
+
+#hud {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(4, 3, 2, 0.18), rgba(4, 3, 2, 0) 18%);
+}
+
+#desktop-guide {
+  display: none;
+  position: fixed;
+  top: 22px;
+  left: 22px;
+  width: min(312px, calc(100vw - 132px));
+  padding: 14px 16px 15px;
+  border: 1px solid rgba(255, 218, 155, 0.22);
+  border-radius: 18px;
+  background: rgba(10, 8, 6, 0.32);
+  box-shadow: 0 14px 46px rgba(0, 0, 0, 0.24);
+  backdrop-filter: blur(14px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    border-color 0.2s ease,
+    background 0.2s ease;
+}
+
+.touch-device #desktop-guide {
+  display: none;
+}
+
+.hovering-showcase #desktop-guide {
+  border-color: rgba(143, 196, 255, 0.34);
+  background: rgba(8, 12, 18, 0.34);
+}
+
+.navigating-showcase #desktop-guide,
+.orbiting-showcase #desktop-guide {
+  border-color: rgba(149, 212, 255, 0.52);
+}
+
+.desktop-guide__eyebrow,
+.desktop-guide__state,
+.desktop-guide__detail,
+.desktop-guide__pace {
+  margin: 0;
+}
+
+.desktop-guide__eyebrow {
+  color: rgba(190, 222, 255, 0.88);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.desktop-guide__state {
+  margin-top: 8px;
+  color: rgba(248, 252, 255, 0.96);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.desktop-guide__detail {
+  margin-top: 7px;
+  color: rgba(214, 226, 240, 0.82);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.desktop-guide__pace {
+  margin-top: 10px;
+  color: rgba(157, 213, 255, 0.88);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  line-height: 1.45;
+}
+
+#hover-guide {
+  position: fixed;
+  top: 0;
+  left: 0;
+  max-width: min(320px, calc(100vw - 24px));
+  padding: 10px 12px 11px;
+  border: 1px solid rgba(156, 212, 255, 0.28);
+  border-radius: 14px;
+  background: rgba(7, 11, 17, 0.84);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(14px);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.12s ease, transform 0.12s ease;
+  z-index: 4;
+}
+
+#hover-guide.hover-guide--visible {
+  opacity: 1;
+}
+
+.hover-guide__label,
+.hover-guide__action,
+.hover-guide__source {
+  margin: 0;
+}
+
+.hover-guide__label {
+  color: rgba(244, 249, 255, 0.96);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.hover-guide__action {
+  margin-top: 5px;
+  color: rgba(178, 212, 244, 0.88);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.hover-guide__source {
+  margin-top: 6px;
+  color: rgba(230, 238, 248, 0.9);
+  font-size: 10px;
+  line-height: 1.45;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  word-break: break-word;
+}
+
+#desktop-reticle {
+  display: none;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 22px;
+  height: 22px;
+  transform: translate(-50%, -50%);
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.touch-device #hover-guide,
+.touch-device #desktop-reticle {
+  display: none;
+}
+
+.desktop-reticle__ring,
+.desktop-reticle__dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+}
+
+.desktop-reticle__ring {
+  width: 18px;
+  height: 18px;
+  border: 1px solid rgba(183, 220, 255, 0.52);
+  box-shadow: 0 0 14px rgba(122, 186, 255, 0.18);
+}
+
+.desktop-reticle__dot {
+  width: 4px;
+  height: 4px;
+  background: rgba(236, 246, 255, 0.96);
+  box-shadow: 0 0 12px rgba(149, 212, 255, 0.52);
+}
+
+.corner-rotate {
+  position: fixed;
+  bottom: 24px;
+  z-index: 5;
+  width: 62px;
+  height: 62px;
+  border: 1px solid rgba(158, 214, 255, 0.32);
+  border-radius: 50%;
+  background: rgba(7, 11, 17, 0.48);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.32), 0 0 24px rgba(98, 178, 255, 0.16);
+  color: rgba(232, 245, 255, 0.94);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  pointer-events: auto;
+  opacity: 0;
+  transform: translateY(10px) scale(0.92);
+  transition: opacity 0.14s ease, transform 0.14s ease, border-color 0.14s ease;
+}
+
+.corner-rotate--left {
+  left: 24px;
+}
+
+.corner-rotate--right {
+  /* Chat sidebar is 360 px on desktop but collapsed on screens below 900 px.
+     Below that breakpoint the rotate corner can sit at a normal right edge. */
+  right: calc(360px + 24px + env(safe-area-inset-right));
+}
+
+@media (max-width: 900px) {
+  .corner-rotate--right {
+    right: calc(24px + env(safe-area-inset-right));
+  }
+}
+
+.corner-rotate--left {
+  left: calc(24px + env(safe-area-inset-left));
+}
+
+.corner-rotate {
+  bottom: calc(24px + env(safe-area-inset-bottom));
+}
+
+.corner-rotate::before {
+  content: "";
+  position: absolute;
+  inset: 11px;
+  border: 2px solid rgba(184, 224, 255, 0.7);
+  border-bottom-color: transparent;
+  border-radius: 50%;
+}
+
+.corner-rotate::after {
+  content: "";
+  position: absolute;
+  top: 12px;
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+}
+
+.corner-rotate--left::before {
+  transform: rotate(-44deg);
+}
+
+.corner-rotate--left::after {
+  left: 14px;
+  border-right: 8px solid rgba(184, 224, 255, 0.82);
+}
+
+.corner-rotate--right::before {
+  transform: rotate(44deg) scaleX(-1);
+}
+
+.corner-rotate--right::after {
+  right: 14px;
+  border-left: 8px solid rgba(184, 224, 255, 0.82);
+}
+
+.corner-rotate span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.corner-rotate.corner-rotate--visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  border-color: rgba(173, 225, 255, 0.62);
+}
+
+.touch-device .corner-rotate {
+  display: none;
+}
+
+#mobile-controls {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.touch-device #mobile-controls {
+  opacity: 1;
+}
+
+.mobile-control {
+  position: fixed;
+  left: 22px;
+  bottom: 24px;
+  width: 122px;
+  height: 122px;
+  border: 1px solid rgba(255, 218, 155, 0.28);
+  border-radius: 50%;
+  background: rgba(10, 8, 6, 0.28);
+  backdrop-filter: blur(12px);
+}
+
+.mobile-control__ring {
+  position: absolute;
+  inset: 14px;
+  border: 1px solid rgba(255, 244, 224, 0.12);
+  border-radius: 50%;
+}
+
+.mobile-control__knob {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 46px;
+  height: 46px;
+  border: 1px solid rgba(255, 230, 191, 0.48);
+  border-radius: 50%;
+  background: rgba(229, 188, 114, 0.2);
+  transform: translate(-50%, -50%);
+  transition: transform 0.06s linear, background 0.12s ease;
+}
+
+.mobile-control.mobile-control--active .mobile-control__knob {
+  background: rgba(229, 188, 114, 0.3);
+}
+
+.mobile-look-hint {
+  position: fixed;
+  right: 20px;
+  bottom: 34px;
+  max-width: min(42vw, 168px);
+  padding: 10px 12px;
+  border: 1px solid rgba(255, 218, 155, 0.22);
+  border-radius: 14px;
+  background: rgba(10, 8, 6, 0.26);
+  color: rgba(255, 244, 224, 0.8);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.35;
+  text-align: center;
+  text-transform: uppercase;
+  backdrop-filter: blur(12px);
+}
+
+#compass {
+  display: none;
+  position: fixed;
+  top: 22px;
+  right: 22px;
+  width: 82px;
+  height: 82px;
+  border: 1px solid rgba(255, 218, 155, 0.34);
+  border-radius: 50%;
+  background: rgba(10, 8, 6, 0.36);
+  box-shadow: 0 14px 48px rgba(0, 0, 0, 0.26);
+  backdrop-filter: blur(14px);
+}
+
+#compass::before,
+#compass::after {
+  content: "";
+  position: absolute;
+  inset: 13px;
+  border: 1px solid rgba(255, 244, 224, 0.1);
+  border-radius: 50%;
+}
+
+#compass::after {
+  inset: 39px 12px auto;
+  height: 1px;
+  border: 0;
+  border-radius: 0;
+  background: rgba(255, 244, 224, 0.16);
+}
+
+.compass-marker {
+  position: absolute;
+  top: 6px;
+  left: 50%;
+  z-index: 2;
+  width: 0;
+  height: 0;
+  transform: translateX(-50%);
+  border-right: 5px solid transparent;
+  border-bottom: 11px solid #e5bc72;
+  border-left: 5px solid transparent;
+}
+
+#compass-rose {
+  position: absolute;
+  inset: 0;
+  transition: transform 0.08s linear;
+}
+
+#compass span {
+  position: absolute;
+  color: rgba(255, 244, 224, 0.86);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+
+.north {
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.east {
+  top: 50%;
+  right: 11px;
+  transform: translateY(-50%);
+}
+
+.south {
+  bottom: 9px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.west {
+  top: 50%;
+  left: 11px;
+  transform: translateY(-50%);
+}
+
+@media (pointer: coarse) {
+  #compass {
+    top: 16px;
+    right: 16px;
+    width: 72px;
+    height: 72px;
+  }
+
+  #compass::before,
+  #compass::after {
+    inset: 11px;
+  }
+
+  #compass::after {
+    inset: 34px 10px auto;
+  }
+
+  #compass span {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 900px) and (pointer: fine) {
+  #desktop-guide {
+    top: auto;
+    bottom: 18px;
+    left: 18px;
+    width: min(300px, calc(100vw - 36px));
+  }
+}
